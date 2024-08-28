@@ -1,0 +1,37 @@
+FROM armdocker.rnd.ericsson.se/proj-online-sed/node:19-alpine AS build
+
+COPY web /web
+
+WORKDIR /web
+
+RUN apk add python3 make g++
+ENV PYTHON /usr/bin/python3
+
+RUN npm config set @eds:registry https://arm.rnd.ki.sw.ericsson.se/artifactory/api/npm/proj-eds-npm-local && \
+    npm install && \
+    npm run build && \
+    rm -rf node_modules/ && \
+    npm install --omit=dev
+
+FROM armdocker.rnd.ericsson.se/proj-online-sed/node:19-alpine
+
+ENV NODE_ENV=production
+
+COPY --from=build /web/dist/ /web/
+COPY --from=build /web/src/api_server/ /web/src/api_server/
+COPY --from=build /web/src/utils/ /web/src/utils/
+COPY --from=build /web/res/ /web/res/
+COPY --from=build /web/package.json /web/package.json
+COPY --from=build /web/swagger.json /web/swagger.json
+COPY --from=build /web/node_modules/ /web/node_modules/
+COPY web/run_api_server.sh /web/run_api_server.sh
+
+RUN export NODE_ENV="production" && \
+    apk add --no-cache openssl bash nodejs && \
+    chmod 777 /web/run_api_server.sh
+
+WORKDIR /web
+
+CMD ["node", "src/api_server/apiServer.js"]
+
+EXPOSE 3000

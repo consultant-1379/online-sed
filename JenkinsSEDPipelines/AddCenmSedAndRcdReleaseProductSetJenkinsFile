@@ -1,0 +1,37 @@
+#!/usr/bin/env groovy
+pipeline {
+    agent {
+        node {
+            label 'INT_Cloud_Native'
+        }
+    }
+    parameters {
+        string(defaultValue: "", description: 'Product set number for ex. 23.12.100', name: 'product_set')
+    }
+
+    stages {
+        stage('Run Jobs in Parallel') {
+            parallel {
+                stage('Add Release Product Set to the Online SED') {
+                    steps {
+                        script {
+                            build job: 'sed_add_cenm_release_product_set', parameters: [
+                                    string(name: 'product_set', value: params.product_set)
+                            ]
+                        }
+                    }
+                }
+                stage('Add Release Product Set to the Online RCD') {
+                    steps {
+                        script {
+                            build job: 'rcd_add_release_product_set', parameters: [
+                                    string(name: 'product', value: 'cENM'),
+                                    string(name: 'product_set', value: params.product_set)
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

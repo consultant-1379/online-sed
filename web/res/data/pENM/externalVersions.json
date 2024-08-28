@@ -1,0 +1,38 @@
+[
+  {
+    "name": "R1GM",
+    "schemaVersion": "2.33.5",
+    "targetAudience": "cu",
+    "version": "23.17.120",
+    "sprintVersion": "23.17",
+    "releaseNumber": "24.1",
+    "release": true
+  },
+  {
+    "name": "R1GL",
+    "schemaVersion": "2.32.20",
+    "targetAudience": "cu",
+    "version": "23.16.131",
+    "sprintVersion": "23.16",
+    "releaseNumber": "23.4",
+    "release": true
+  },
+  {
+    "name": "R1GK",
+    "schemaVersion": "2.31.12",
+    "targetAudience": "cu",
+    "version": "23.15.116",
+    "sprintVersion": "23.15",
+    "releaseNumber": "23.4",
+    "release": true
+  },
+  {
+    "name": "R1GJ",
+    "schemaVersion": "2.30.8",
+    "targetAudience": "cu",
+    "version": "23.14.110",
+    "sprintVersion": "23.14",
+    "releaseNumber": "",
+    "release": true
+  }
+]

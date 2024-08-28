@@ -1,0 +1,22 @@
+[
+  {
+    "name": "R1GL",
+    "schemaVersion": "1.53.0-76",
+    "targetAudience": "cu",
+    "version": "24.03.102",
+    "sprintVersion": "24.03",
+    "releaseNumber": "24.1",
+    "release": true,
+    "normalisedVersion": "24.3.102"
+  },
+  {
+    "name": "R1GT IP1",
+    "schemaVersion": "1.53.0-76",
+    "targetAudience": "cu",
+    "version": "24.03.102",
+    "sprintVersion": "24.03",
+    "releaseNumber": "24.1",
+    "release": true,
+    "normalisedVersion": "24.3.102"
+  }
+]

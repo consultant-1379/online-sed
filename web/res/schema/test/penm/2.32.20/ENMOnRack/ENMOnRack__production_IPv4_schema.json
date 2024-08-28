@@ -1,0 +1,334 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "additionalProperties": false,
+  "version": "1.0.1",
+  "definitions": {
+    "any_string": {
+      "description": "This must be any string",
+      "pattern": "^.+$",
+      "type": "string"
+    },
+    "ipv4": {
+      "description": "This must be a valid ipv4 address",
+      "pattern": "^(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$",
+      "type": "string",
+      "preventDuplicates": true,
+      "validationMessage": "Input must follow the IPv4 format and can only contain the following characters: 0-9 and ."
+    },
+    "ipv4_allow_duplicates": {
+      "description": "This must be a valid ipv4 address",
+      "pattern": "^(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$",
+      "type": "string",
+      "validationMessage": "Input must follow the IPv4 format and can only contain the following characters: 0-9 and ."
+    },
+    "ipv4_cidr": {
+      "description": "This must be a valid ipv4 cidr",
+      "pattern": "^(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)/([1-9]|[12][0-9]|3[0-2])$",
+      "type": "string",
+      "validationMessage": "Input must follow the IPv4 CIDR format and can only contain the following characters: 0-9 and /"
+    },
+    "ipv6_cidr": {
+      "pattern": "^\\s*((?:(?:(?:[0-9A-Fa-f]{1,4}:){7}(?:[0-9A-Fa-f]{1,4}|:))|(?:(?:[0-9A-Fa-f]{1,4}:){6}(?::[0-9A-Fa-f]{1,4}|(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){5}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){4}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,3})|(?:(?::[0-9A-Fa-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){3}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,4})|(?:(?::[0-9A-Fa-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){2}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,5})|(?:(?::[0-9A-Fa-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){1}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,6})|(?:(?::[0-9A-Fa-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?::(?:(?:(?::[0-9A-Fa-f]{1,4}){1,7})|(?:(?::[0-9A-Fa-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(?:%.+)?)\\/(6[0-4]|[3-5][0-9]|2[4-9])$",
+      "description": "This must be a valid IPv6 CIDR.",
+      "type": "string",
+      "preventDuplicates": true,
+      "validationMessage": "Input must follow the IPv6 CIDR format and can only contain the following characters: a-f, A-F, 0-9, / and :"
+    },
+    "port": {
+      "pattern": "^(102[5-9]|10[3-9]\\d|1[1-9]\\d{2}|[2-9]\\d{3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5])|22$",
+      "description": "This must be a valid port.",
+      "type": "string",
+      "preventDuplicates": true,
+      "validationMessage": "Input must be 22 or any integer number between 1025 and 65535 (inclusive)"
+    },
+    "true_false": {
+      "description": "This must be either true, or false.",
+      "type": "string",
+      "enum": [
+        "true",
+        "false"
+      ]
+    },
+    "hostname": {
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*$",
+      "description": "This must be a valid hostname.",
+      "type": "string",
+      "preventDuplicates": true,
+      "validationMessage": "Please check \"more info\" for guidelines"
+    },
+    "password": {
+      "description": "Password for something :)",
+      "pattern": "^[A-Za-z0-9!@#$%^&*()~_+{}|:<>?\\-=\\[\\];,.\\/]{8,20}$",
+      "type": "string",
+      "format": "password",
+      "validationMessage": "The password must match some criteria"
+    }
+  },
+  "properties": {
+    "parameters": {
+      "additionalProperties": false,
+      "default": {},
+      "description": "Please fill in all required fields",
+      "properties": {
+        "fb_dpmediation_1_ipaddress": {
+          "category": "fallbackNodeApplications",
+          "autoPopulate": "ipaddress",
+          "$ref": "#/definitions/ipv4",
+          "displayName": "Some changed display name",
+          "example": "10.59.132.51",
+          "displayIf": ["enable_fallback", "enable_fallback_domain_proxy"],
+          "optional": true
+        },
+        "enable_fallback": {
+          "keys": ["global.enable_fallback"],
+          "$ref": "#/definitions/true_false",
+          "displayName": "Enable fallback node",
+          "category": "fallbackNodeApplications",
+          "value": "false",
+          "description": "Enable the fallback node values"
+        },
+        "fb_node1_IP": {
+          "keys": ["global.fb_node1_IP"],
+          "category": "fallbackNodeApplications",
+          "$ref": "#/definitions/ipv4",
+          "displayName": "The ip address of the fallback node",
+          "example": "10.59.132.69",
+          "displayIf": ["enable_fallback"]
+        },
+        "fb_node1_WWPN2": {
+          "category": "fallbackNodeApplications",
+          "$ref": "#/definitions/any_string",
+          "displayName": "The WWPN of Port 2 on the fallback node",
+          "example": "50:01:43:80:24:D5:35:D7",
+          "displayIf": ["enable_fallback"],
+          "optional": true,
+          "keepOptional": true
+        },
+        "cloud_user_ssh_key": {
+          "category": "fallbackNodeApplications",
+          "$ref": "#/definitions/any_string",
+          "displayName": "The cloud user ssh key  for the fallback node",
+          "example": "file:///root/.ssh/vm_private_key.pub",
+          "displayIf": ["enable_fallback"],
+          "optional": true
+        },
+        "rwx_storageClass": {
+          "$ref": "#/definitions/any_string",
+          "displayName": "RWX storage class",
+          "category": "storage",
+          "optional": true,
+          "example": "nfs-enm",
+          "keys": [
+            "global.rwx.storageClass",
+            "eric-data-search-engine.persistence.backup.persistentVolumeClaim"
+          ]
+        },
+        "rwo_storageClass": {
+          "$ref": "#/definitions/any_string",
+          "displayName": "RWO storage class",
+          "category": "storage",
+          "description": "A more detailed description",
+          "example": "network-block",
+          "keys": [
+            "eric-data-graph-database-nj.persistentVolumeClaim.storageClass"
+          ]
+        },
+        "fm_vip_address": {
+          "$ref": "#/definitions/ipv4",
+          "displayName": "FM virtual IP address",
+          "autoPopulate": "ipv4_vips",
+          "category": "ipv4",
+          "example": "10.42.14.164",
+          "optional": true,
+          "keys": ["global.vips.fm_vip_address"]
+        },
+        "podNetworkCIDR": {
+          "$ref": "#/definitions/ipv4_cidr",
+          "displayName": "Ingress l4 network CIDR address",
+          "category": "ipv4",
+          "example": "192.168.0.0/16",
+          "keys": ["eric-net-ingress-l4.podNetworkCIDR"]
+        },
+        "hostPort": {
+          "$ref": "#/definitions/port",
+          "displayName": "PM node exporter host port",
+          "category": "other",
+          "example": "9100",
+          "keys": ["eric-pm-node-exporter.hostPort"],
+          "alternateKeys": [
+            "eric-pm-node-exporter.prometheus.hostPort"
+          ]
+        },
+        "pullSecret": {
+          "$ref": "#/definitions/any_string",
+          "displayName": "Image registry pull secret",
+          "description": "Custom image registry pull secret description",
+          "category": "other",
+          "example": "csar-secret",
+          "keys": ["global.pullSecret", "global.registry.pullSecret"]
+        },
+        "ipv4_vips_ipaddress_start": {
+          "keys": ["global.ipv4_vips_ipaddress_start"],
+          "category": "notSet",
+          "$ref": "#/definitions/ipv4_allow_duplicates",
+          "displayName": "",
+          "example": ""
+        },
+        "ipv4_vips_ipaddress_end": {
+          "keys": ["global.ipv4_vips_ipaddress_end"],
+          "category": "notSet",
+          "$ref": "#/definitions/ipv4_allow_duplicates",
+          "displayName": "",
+          "example": ""
+        },
+        "amos_vip_address": {
+          "$ref": "#/definitions/ipv4",
+          "category": "ipv4",
+          "autoPopulate": "ipv4_vips",
+          "displayName": "AMOS IPv4 Virtual IP",
+          "example": "10.42.14.168",
+          "keys": [
+            "global.vips.amos_vip_address"
+          ]
+        },
+        "host_system_identifier": {
+          "$ref": "#/definitions/any_string",
+          "displayName": "Host system identifier",
+          "description": "Host system identifier",
+          "category": "other",
+          "example": "value that cannot be changed",
+          "value": "fixedValue",
+          "keys": ["global.enmProperties.host_system_identifier"]
+        },
+        "ip_version": {
+          "category": "ipv4",
+          "$ref": "#/definitions/any_string",
+          "enum": [
+            "ipv4"
+          ],
+          "displayName": "IP version",
+          "example": "IPv4",
+          "keys": ["global.ip_version"]
+        },
+        "environment_model": {
+          "category": "other",
+          "$ref": "#/definitions/any_string",
+          "value": "extraLarge__production_dualStack__3evt_racks_2eba.xml",
+          "displayName": "Name of the model file to be used in ENM deployment",
+          "example": "extraLarge__production_dualStack__3evt_racks_2eba.xml",
+          "keys": ["global.environment_model"]
+        },
+        "hostname_prefix": {
+          "category": "notSet",
+          "$ref": "#/definitions/hostname",
+          "displayName": "Hostname Prefix",
+          "example": "",
+          "keys": ["global.hostname_prefix"]
+        },
+        "scp_node4_hostname": {
+          "category": "other",
+          "$ref": "#/definitions/hostname",
+          "autoPopulate": "hostname",
+          "displayName": "The host name of SCP 4",
+          "example": "enmscp4",
+          "keys": ["global.scp_node4_hostname"]
+        },
+        "httpd_fqdn": {
+          "longDescription": [
+            "Must contain at least 2 dot characters. To access FM Corba NBI feature from External system,",
+            "an entry in DNS with httpd_ipaddress and iorfile.<value of httpd_fqdn> is required.",
+            "To access ENM NBI features from external systems over duel stack IPv4 and IPV6 an",
+            "A record and AAAA record in DNS is required to map to both IPV4 and IPV6 httpd addresses from a common hostname."
+          ],
+          "description": "The DNS entry associated with the httpd addresses.",
+          "category": "other",
+          "$ref": "#/definitions/any_string",
+          "displayName": "DNS httpd addresses",
+          "example": "enmhost-1.athtem.eei.ericsson.se",
+          "valueMatchesKey": "SSO_COOKIE_DOMAIN"
+        },
+        "SSO_COOKIE_DOMAIN": {
+          "description": "Must be equal to httpd_fqdn field.",
+          "category": "other",
+          "$ref": "#/definitions/any_string",
+          "displayName": "SSO cookie domain",
+          "example": "enmhost-1.athtem.eei.ericsson.se",
+          "valueMatchesKey": "httpd_fqdn"
+        },
+        "LMS_IPv6": {
+          "description": "For IPv6_EXT deployments IPv6 service vlans address.",
+          "ipVersion": [
+            "ipv6",
+            "dual"
+          ],
+          "category": "other",
+          "$ref": "#/definitions/ipv6_cidr",
+          "displayName": "LITP Management Server IPv6 address",
+          "example": "2001:1b70:82a1:0380:0000:0000:0000:0002/64"
+        },
+        "evt_node2_IP": {
+          "ipVersion": [
+            "ipv4",
+            "dual"
+          ],
+          "category": "other",
+          "$ref": "#/definitions/ipv4",
+          "displayName": "The ip address of EVT 2",
+          "example": "10.59.132.62"
+        },
+        "password1": {
+          "category": "other",
+          "$ref": "#/definitions/password",
+          "displayName": "Some password",
+          "example": "loremIpsum"
+        },
+        "password2": {
+          "category": "other",
+          "$ref": "#/definitions/password",
+          "displayName": "Some password",
+          "example": "loremIpsum"
+        },
+        "neo4j_reader_user_password": {
+          "$ref": "#/definitions/password",
+          "displayName": "Reader password for NEO4J",
+          "category": "doNotDisplay",
+          "value": "",
+          "example": "Neo4jreader123"
+        },
+        "sfs_console_IP":{
+          "$ref": "#/definitions/ipv4_allow_duplicates",
+          "category": "ipv4",
+          "displayName": "NAS console IP address",
+          "example": "10.59.134.14",
+          "autoPopulate": "ipv4_vips",
+          "valueMatchesKey": "san_spaIP"
+        },
+        "san_spaIP":{
+          "$ref": "#/definitions/ipv4",
+          "category": "ipv4",
+          "displayName": "SAN SP-A ip address",
+          "example": "10.82.17.73",
+          "valueMatchesKey": "sfs_console_IP"
+        }
+      },
+      "required": [],
+      "title": "Site Engineering Data for cENM",
+      "type": "object"
+    }
+  },
+  "required": ["parameters"],
+  "type": "object",
+  "categories": [
+    { "name": "IPv4 Address", "shortName": "ipv4" },
+    { "name": "Storage", "shortName": "storage" },
+    { "name": "Fallback Node Cluster Services", "shortName": "fallbackNodeApplications"},
+    { "name": "Other", "shortName": "other" }
+  ],
+  "autoPopulationTypes": [
+    {
+      "name": "IPv4 VIPs",
+      "shortName": "ipv4_vips",
+      "type": "ipv4"
+    }
+  ]
+}

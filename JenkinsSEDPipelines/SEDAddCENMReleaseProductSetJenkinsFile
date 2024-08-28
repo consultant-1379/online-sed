@@ -1,0 +1,46 @@
+#!/usr/bin/env groovy
+
+pipeline{
+    agent {
+        node{
+            label 'INT_Cloud_Native'
+        }
+    }
+    parameters {
+        string(defaultValue: "", description: 'Product set number for ex. 23.12.100', name: 'product_set')
+    }
+    stages{
+        stage('Add new cENM Release Product Set to the Online SED') {
+            steps {
+                sh '''
+                response=$(curl -X GET https://siteengineeringdata.internal.ericsson.com/api/addcenmreleaseproductset/$product_set)
+                if [[ $response.success != *"true"* ]]; then
+                  exit 1
+                fi;
+                '''
+            }
+        }
+    }
+    post{
+        success {
+            script {
+                def recipients = ['PDLTORDEPL@pdl.internal.ericsson.com', 'PDLENMSPIN@pdl.internal.ericsson.com', 'PDLENMWHIT@pdl.internal.ericsson.com', 'PDLENMTARG@pdl.internal.ericsson.com']
+                recipients.each { recipient ->
+                    mail to: recipient,
+                            subject: "Success: SED API Call with cENM RELEASE PRODUCT SET: ${product_set}",
+                            body: "Made a SED API call with cENM RELEASE PRODUCT SET : ${product_set} \n ${BUILD_URL}"
+                }
+            }
+        }
+        failure {
+            script {
+                def recipients = ['PDLTORDEPL@pdl.internal.ericsson.com', 'PDLENMSPIN@pdl.internal.ericsson.com', 'PDLENMWHIT@pdl.internal.ericsson.com', 'PDLENMTARG@pdl.internal.ericsson.com']
+                recipients.each { recipient ->
+                    mail to: recipient,
+                            subject: "Failed: SED API Call with cENM RELEASE PRODUCT SET: ${product_set}",
+                            body: "Made a SED API call with cENM RELEASE PRODUCT SET : ${product_set} \n ${BUILD_URL}"
+                }
+            }
+        }
+    }
+}

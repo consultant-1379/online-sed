@@ -1,0 +1,36 @@
+global:
+  ip_version: ipv4
+  environment_model:
+  hostname_prefix:
+  enmProperties:
+    enm_deployment_type: Extra_Large_CloudNative_ENM
+  sccResources:
+    - value1
+    - value2
+    - value3
+  nodeSelector:
+    key1: value1
+    key2: value2
+  tolerations:
+    - key: Key1
+      operator: Exists
+      effect: PreferNoSchedule
+      tolerationSeconds: "3"
+    - key: Key2
+      operator: Equal
+      value: Value
+      effect: NoSchedule
+  bro:
+    externalStorageCredentials: test
+    backup:
+      scheduling:
+        schedules:
+          - every: 2d10m
+            start: 2024-01-25T12:00:00
+            stop: 2025-01-24T12:00:00
+        backupPrefix: SCHEDULED_BACKUP
+      retention:
+        limit: "2"
+        autoDelete: true
+      preUpgradeAutomaticBackup: true
+      preUpgradeBackupName: BACKUP_NAME

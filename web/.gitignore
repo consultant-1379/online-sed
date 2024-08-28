@@ -1,0 +1,12 @@
+.idea
+build
+digital_sed.egg-info
+dist
+linux_venv38
+win_venv38
+web/node_modules
+other
+web/package-lock.json
+gen_temp
+.dockerignore
+.scannerwork

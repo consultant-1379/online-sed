@@ -1,0 +1,76 @@
+[
+  {
+    "name": "Physical ENM",
+    "shortName": "pENM",
+    "sedFileFormat": "txt",
+    "sedSchemaRepo": "proj-online-sed-generic-local",
+    "useCaseOptions": [
+      {
+        "name": "Install"
+      },
+      {
+        "name": "Upgrade"
+      }
+    ],
+    "ipVersions": [
+      {
+        "name": "ipv4"
+      },
+      {
+        "name": "dual"
+      },
+      {
+        "name": "ipv6_ext"
+      }
+    ]
+  },
+  {
+   "name": "Cloud Native ENM",
+   "shortName": "cENM",
+   "sedFileFormat": "yaml",
+   "sedSchemaRepo": "proj-online-sed-generic-local",
+   "useCaseOptions": [
+     {
+       "name": "Install"
+     },
+     {
+       "name": "Upgrade"
+     }
+   ],
+   "ipVersions": [
+     {
+       "name": "IPv4"
+     },
+     {
+       "name": "Dual"
+     },
+     {
+       "name": "IPv6_EXT"
+     }
+    ],
+    "deploymentSizes"  : [
+      {
+        "name": "small",
+        "datapath": "eric-enm-integration-production-values",
+        "type": "Small_CloudNative_ENM"
+      },
+      {
+        "name": "extraLarge",
+        "datapath": "eric-enm-integration-extra-large-production-values",
+        "type": "Extra_Large_CloudNative_ENM"
+      },
+      {
+        "name": "singleInstance",
+        "datapath": "eric-enm-single-instance-production-integration-values",
+        "displayInExternalSED": false,
+        "type": "Small_CloudNative_ENM"
+      },
+      {
+        "name": "multiInstance",
+        "datapath": "eric-enm-multi-instance-functional-integration-values",
+        "displayInExternalSED": false,
+        "type": "Small_CloudNative_ENM"
+      }
+    ]
+  }
+]

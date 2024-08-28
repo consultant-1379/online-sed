@@ -1,0 +1,97 @@
+[
+  {
+    "releaseNumber":"24.4",
+    "sprintNumber":"24.16",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.4",
+    "sprintNumber":"24.15",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.4",
+    "sprintNumber":"24.14",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.4",
+    "sprintNumber":"24.13",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.4",
+    "sprintNumber":"24.12",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.3",
+    "sprintNumber":"24.11",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.3",
+    "sprintNumber":"24.10",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.3",
+    "sprintNumber":"24.09",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.3",
+    "sprintNumber":"24.08",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.2",
+    "sprintNumber":"24.07",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.2",
+    "sprintNumber":"24.06",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.2",
+    "sprintNumber":"24.05",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.2",
+    "sprintNumber":"24.04",
+    "visible": false
+  },
+  {
+    "releaseNumber":"24.1",
+    "sprintNumber":"24.03",
+    "visible": true
+  },
+  {
+    "releaseNumber":"24.1",
+    "sprintNumber":"24.02",
+    "visible": true
+  },
+  {
+    "releaseNumber":"24.1",
+    "sprintNumber":"24.01",
+    "visible": true
+  },
+  {
+    "releaseNumber":"24.1",
+    "sprintNumber":"23.17",
+    "visible": true
+  },
+  {
+    "releaseNumber": "23.4",
+    "sprintNumber": "23.16",
+    "visible": true
+  },
+  {
+    "releaseNumber": "23.4",
+    "sprintNumber": "23.15",
+    "visible": true
+  }
+]

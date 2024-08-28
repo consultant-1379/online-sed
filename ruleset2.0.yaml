@@ -1,0 +1,154 @@
+modelVersion: 2.0
+
+description: "ENM: CMService Service Group Pipeline"
+
+docker:
+  registry: https://armdocker.rnd.ericsson.se
+
+docker-images:
+  - adp-release-auto: armdocker.rnd.ericsson.se/sandbox/adp-staging/adp-cicd/bob-adp-release-auto:latest
+
+properties:
+  - docker-image-path: armdocker.rnd.ericsson.se/proj-online-sed/sed
+  - docker-image-path-internal: armdocker.rnd.ericsson.se/proj_oss_releases/enm/sed
+
+env:
+  - RELEASE (default=true)
+  - ISO_VERSION (default=1.0.5555)
+  - BUILD_DATE (default = $(date +%d%m%Y-%H%M%S --utc))
+  - AUTHOR_NAME
+  - AUTHOR_EMAIL
+  - GIT_COMMITTER_NAME
+  - GIT_COMMITTER_EMAIL
+
+var:
+  - commit-hash
+  - version
+  - version-prefix
+  - rstate
+
+rules:
+  generate-new-version:
+    - task: generate-version
+      docker-image: adp-release-auto
+      cmd: generate-version -f VERSION_PREFIX --is-release ${env.RELEASE} --output version
+    - task: set-version-prefix
+      cmd: cat VERSION_PREFIX > .bob/var.version-prefix
+    - task: generate-rstate
+      docker-image: adp-release-auto
+      cmd: get_rstate.py ${var.version} > .bob/var.rstate
+    - task: get-commit-hash
+      docker-image: adp-release-auto
+      cmd: git rev-parse --short HEAD > .bob/var.commit-hash
+
+  build-test-image:
+    - task: build-test-image
+      cmd:
+        - docker build -f test/Dockerfile -t online-sed/test .
+
+  run-tests:
+    - task: build-test-image
+      cmd:
+        - docker build -f test/Dockerfile -t online-sed/test .
+#    - task: run-web-coverage
+#      cmd:
+#        - docker run --rm online-sed/test ./test_scripts/execute_web_coverage.sh
+    - task: run-sonarqube-scan
+      cmd:
+        - docker run --rm online-sed/test ./test_scripts/execute_sonarqube_scan.sh
+    - task: run-web-playwright
+      cmd:
+        - docker run --rm online-sed/test ./test_scripts/execute_web_playwright.sh
+    - task: run-api-server
+      cmd:
+        - docker run --rm online-sed/test ./test_scripts/execute_api_server.sh
+
+  build-image:
+    - task: build-image
+      cmd:
+        - docker build -f containers/DockerfileFrontEnd -t ${docker-image-path}-frontend:${var.version} .
+        - docker build -f containers/DockerfileAPIServer -t ${docker-image-path}-backend:${var.version} .
+
+  build-image-staging:
+    - task: build-image
+      cmd:
+        - echo VITE_APP_ENV_TYPE=pdu >> web/.env
+        - echo VITE_APP_ENV_API_PORT=8888 >> web/.env
+        - docker build -f containers/DockerfileFrontEnd -t ${docker-image-path-internal}-frontend-staging:${var.version} .
+        - rm -f web/.env
+        - docker build -f containers/DockerfileAPIServer -t ${docker-image-path-internal}-backend-staging:${var.version} .
+
+  build-image-feature_cenm:
+    - task: build-image
+      cmd:
+        - echo VITE_APP_ENV_TYPE=pdu >> web/.env
+        - echo VITE_APP_ENV_API_PORT=1234 >> web/.env
+        - docker build -f containers/DockerfileFrontEnd -t ${docker-image-path-internal}-frontend-feature_cenm:${var.version} .
+        - rm -f web/.env
+        - docker build -f containers/DockerfileAPIServer -t ${docker-image-path-internal}-backend-feature_cenm:${var.version} .
+
+  build-dev-image:
+    - task: build-image
+      cmd:
+        - echo VITE_APP_ENV_TYPE=pdu >> web/.env
+        - echo VITE_APP_ENV_API_PORT=9991 >> web/.env
+        - docker build -f containers/DockerfileDevFrontEnd -t ${docker-image-path-internal}-dev-frontend-staging:${var.version} .
+        - rm -f web/.env
+        - echo VITE_APP_ENV_API_PORT=9990 >> web/.env
+        - docker build -f containers/DockerfileDevFrontEnd -t ${docker-image-path-internal}-dev-frontend:${var.version} .
+        - docker build -f containers/DockerfileDevAPIServer -t ${docker-image-path-internal}-dev-backend:${var.version} .
+
+  remove-image:
+    - task: remove-image
+      cmd:
+        - docker image remove ${docker-image-path}-frontend:${var.version}
+        - docker image remove ${docker-image-path}-backend:${var.version}
+
+  remove-image-staging:
+    - task: remove-image
+      cmd:
+        - docker image remove ${docker-image-path-internal}-frontend-staging:${var.version}
+        - docker image remove ${docker-image-path-internal}-backend-staging:${var.version}
+
+  remove-image-feature_cenm:
+    - task: remove-image
+      cmd:
+        - docker image remove ${docker-image-path-internal}-frontend-feature_cenm:${var.version}
+        - docker image remove ${docker-image-path-internal}-backend-feature_cenm:${var.version}
+
+  push-image:
+    - task: push-image
+      cmd:
+        - docker push ${docker-image-path}-frontend:${var.version}
+        - docker push ${docker-image-path}-backend:${var.version}
+
+  push-image-staging:
+    - task: push-image
+      cmd:
+        - docker push ${docker-image-path-internal}-frontend-staging:${var.version}
+        - docker push ${docker-image-path-internal}-backend-staging:${var.version}
+
+  push-image-feature_cenm:
+    - task: push-image
+      cmd:
+        - docker push ${docker-image-path-internal}-frontend-feature_cenm:${var.version}
+        - docker push ${docker-image-path-internal}-backend-feature_cenm:${var.version}
+
+  lint-dockerfile:
+    - task: dockerfile-lint
+      cmd:
+        - docker run --rm -i hadolint/hadolint < Dockerfile | tee ./dockerfilelint.log
+
+
+  create-git-tag:
+    - task: create-git-tag
+      docker-image: adp-release-auto
+      docker-flags:
+        - "--env GIT_COMMITTER_NAME='${env.GIT_COMMITTER_NAME}'"
+        - "--env GIT_COMMITTER_EMAIL='${env.GIT_COMMITTER_EMAIL}'"
+      cmd: git tag --annotate ${var.version} --message "Build Version ${var.version} by ${env.AUTHOR_NAME} <${env.AUTHOR_EMAIL}>"
+
+  remove-git-tag:
+    - task: remove-git-tag
+      docker-image: adp-release-auto
+      cmd: git tag --delete ${var.version}

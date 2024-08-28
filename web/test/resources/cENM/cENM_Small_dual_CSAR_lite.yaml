@@ -1,0 +1,143 @@
+tags: {}
+global:
+  rwx:
+    storageClassCephCapped: network-file-capped-enm
+    homeSyncRequired: false
+    storageClass: network-file
+  persistentVolumeClaim:
+    storageClass: network-block
+  enmProperties:
+    host_system_identifier: ieatenmc12a009
+    COM_INF_LDAP_ROOT_SUFFIX: dc=ieatenmc12a,dc=com
+    COM_INF_LDAP_ADMIN_CN: uid=ssouser,ou=people,dc=ieatenmc12a,dc=com
+    certificatesRevListDistributionPointServiceIpv4Enable: "true"
+    certificatesRevListDistributionPointServiceIpv6Enable: "true"
+    certificatesRevListDistributionPointServiceDnsEnable: "false"
+    publicKeyInfraRegAutorithyPublicServerName: cdp1.cdps.athtem.eei.ericsson.se
+    enforcedUserHardening: "true"
+  ingress:
+    enmHost: ieatenmc12a009.athtem.eei.ericsson.se
+    class: ingress-nginxingress-nginx
+  vips:
+    svc_FM_vip_ipaddress: 10.120.234.27
+    svc_CM_vip_ipaddress: 10.120.234.17
+    svc_PM_vip_ipaddress: 10.120.234.18
+    amos_vip_address: 10.120.234.19
+    general_scripting_vip_address: 10.120.234.21
+    visinamingsb_service: 10.120.234.23
+    itservices_0_vip_address: 10.120.234.24
+    itservices_1_vip_address: 10.120.234.25
+    svc_FM_vip_fwd_ipaddress: 10.120.234.26
+    svc_FM_vip_ipv6address: 2001:1b70:6220:901b::4:11
+    svc_CM_vip_ipv6address: 2001:1b70:6220:901b::4:12
+    svc_PM_vip_ipv6address: 2001:1b70:6220:901b::4:13
+    amos_service_IPv6_IPs: 2001:1b70:6220:901b::4:14
+    scripting_service_IPv6_IPs: 2001:1b70:6220:901b::4:15
+    visinamingsb_service_IPv6_IPs: 2001:1b70:6220:901b::4:16
+    itservices_service_0_IPv6_IPs: 2001:1b70:6220:901b::4:17
+    itservices_service_1_IPv6_IPs: 2001:1b70:6220:901b::4:18
+    svc_FM_vip_fwd_ipv6address: 2001:1b70:6220:901b::4:19
+  timezone: Europe/Dublin
+  ip_version: dual
+  loadBalancerIP:
+    securityServiceLoadBalancerIP: 10.120.236.99
+    securityServiceLoadBalancerIP_IPv6: 2001:1b70:6220:901b::3:3
+    ingressControllerLoadBalancerIP: 10.120.236.90
+    ingressControllerLoadBalancerIP_IPv6: 2001:1b70:6220:901b::3:13
+  registry:
+    url: container-registry.eccd.local:30948/some_other_path
+    pullSecret: csar-secret
+  pullSecret: csar-secret
+  emailServer: email.athtem.eei.ericsson.se
+  sentinelHostname: sentinel-0
+  bro:
+    externalStorageCredentials: sftpsecretmarch25
+eric-enm-version-configmap:
+  enabled: true
+  productVersion: null
+  packageVersion: null
+  productionDate: null
+  productSet: null
+eric-oss-ingress-controller-nx:
+  enabled: true
+  ingressClassResource:
+    ingressClass: ingress-nginx
+    enabled: true
+  service:
+    enabled: true
+    loadBalancerIP: 10.120.236.98
+    loadBalancerIP_IPv6: 2001:1b70:6220:901b::3:2
+    annotations:
+      metallb.universe.tf/loadBalancerIPs: 10.150.57.119,2001:1b70:82b9:016c:0000:0000:0000:001b
+eric-enmsg-amos:
+  archiveCron:
+    enabled: true
+    scheduleHour: 23
+    scheduleMinute: 45
+    retentionPeriod: 5
+    executionDays: 5
+  houseKeepingCron:
+    enabled: true
+    scheduleHour: 23
+    scheduleMinute: 30
+    heavyCommandRetention: 10
+    generalCommandRetention: 30
+eric-net-ingress-l4:
+  l4IngressOnSecondaryNetwork:
+    enabled: false
+    secondaryNetworkCIDR: 214.6.207.0/27
+    nodeExternalInterfaceName: node-external-interface-name
+    secondaryNetworkGateway: 214.6.207.1
+    l4IngressSecondaryNetworkSubRangeStart: 214.6.207.1/27
+    l4IngressSecondaryNetworkSubRangeEnd: 214.6.207.2/27
+  vipManagement: true
+  natAllTrafficOriginatingFromPodNet: false
+  fullnameOverride: {}
+  virtualRouterId: 106
+  interfaces:
+    internal: ccd_int
+    external: app_ecfe_traf
+  podNetworkCIDR: 192.168.0.0/16
+  cniMode: "ipip"
+  ipv6podNetworkCIDR: fd00:eccd:18:ffff::/64
+  rbac:
+    create: true
+    serviceAccountName: null
+eric-enm-troubleshooting-utils:
+  enabled: true
+  clusterRole: true
+eric-enm-ddc:
+  eric-oss-ddc:
+    autoUpload:
+      enabled: true
+      ddpid: lmi_cnisenm138_enm138
+      account: upload@ddpenm5.athtem.eei.ericsson.se
+      password: _!upLoad
+eric-enm-int-pm-server:
+  eric-pm-server:
+    config:
+      external_remote_write:
+        enabled: false
+eric-enm-int-node-exporter:
+  enabled: true
+  eric-pm-node-exporter:
+    enabled: true
+    nodeExporter:
+      service:
+        hostPort: 9690
+eric-enm-rwxpvc:
+  enabled: true
+  defaultPaths:
+    cron: true
+    home: true
+eric-enm-int-esm-server:
+  enabled: true
+  eric-esm-server:
+    enabled: true
+    ingress:
+      enabled: true
+      ingressClass: ingress-nginx
+      hostname: enmcnisn138.seli.gic.ericsson.se
+eric-enmsg-general-scripting:
+  sshdConfig:
+    MaxStartups: 10:30:100

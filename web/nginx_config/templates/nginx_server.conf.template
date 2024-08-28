@@ -1,0 +1,65 @@
+server {
+    listen 443 ssl http2 default_server ssl;
+    listen [::]:443 ssl http2;
+
+    server_name siteengineeringdata.internal.ericsson.com;
+
+    ssl_certificate /ssl_certs/cabundle.crt;
+    ssl_certificate_key /ssl_certs/siteengineeringdata_internal_ericsson_com.key;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
+    ssl_session_tickets off;
+
+    # intermediate configuration
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+    root /web;
+
+    location / {
+        index index.html;
+    }
+    # Location block for forwarding API requests to Express
+    location /api/ {
+        # Proxy pass the requests to the Express server
+        proxy_pass         https://${API_SERVER_NAME}:3000/api/;
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+    }
+    # Location block for forwarding api-docs requests
+    location /api-docs/ {
+        # Proxy pass the requests to the swagger endpoint
+        proxy_pass         https://${API_SERVER_NAME}:3000/api-docs/;
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+    }
+
+    # Location block for forwarding healthcheck requests
+    location /healthcheck/ {
+        # Proxy pass the requests to the swagger endpoint
+        proxy_pass         https://${API_SERVER_NAME}:3000/healthcheck/;
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+    }
+
+    # Location nginx metrics
+    location /nginx_status {
+        # For nginx metrics
+        stub_status on;
+
+   }
+
+}

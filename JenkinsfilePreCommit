@@ -1,0 +1,147 @@
+#!/usr/bin/env groovy
+
+/* IMPORTANT:
+ *
+ * In order to make this pipeline work, the following configuration on Jenkins is required:
+ * - slave with a specific label (see pipeline.agent.label below)
+ * - credentials plugin should be installed and have the secrets with the following names:
+ *   + lciadm100credentials (token to access Artifactory)
+ */
+
+def defaultBobImage = 'armdocker.rnd.ericsson.se/sandbox/adp-staging/adp-cicd/bob.2.0:1.5.2-0'
+def bob = new BobCommand()
+        .bobImage(defaultBobImage)
+        .envVars([ISO_VERSION: '${ISO_VERSION}'])
+        .needDockerSocket(true)
+        .toString()
+def failedStage = ''
+pipeline {
+    agent {
+        label 'Cloud-Native'
+    }
+    parameters {
+        string(name: 'ISO_VERSION', defaultValue: '0.0.0', description: 'The ENM ISO version (e.g. 1.65.77)')
+    }
+    stages {
+        stage('Inject Credential Files') {
+            steps {
+                withCredentials([file(credentialsId: 'lciadm100-docker-auth', variable: 'dockerConfig')]) {
+                    sh "install -m 600 ${dockerConfig} ${HOME}/.docker/config.json"
+                }
+            }
+        }
+        stage ('Clean Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+        stage('Checkout Base Image Git Repository') {
+            steps {
+                script {
+                    if (env.GERRIT_CHANGE_NUMBER) {
+                        checkout changelog: true, \
+                        scm: [$class: 'GitSCM', \
+                        branches: [[name: "$GERRIT_REFSPEC"]], \
+                        doGenerateSubmoduleConfigurations: false, \
+                        extensions: [[$class: 'BuildChooserSetting', buildChooser: [$class: 'GerritTriggerBuildChooser']]], \
+                        submoduleCfg: [], \
+                        userRemoteConfigs: [[refspec: "${GERRIT_REFSPEC}", \
+                        url: "${GERRIT_MIRROR}/${GERRIT_PROJECT}"]]]
+                    } else {
+                        println "No GERRIT_CHANGE_NUMBER"
+                        git changelog: true, poll: false, url: '${GERRIT_MIRROR}/${REPO}'
+                    }
+                }
+            }
+        }
+        stage('Run Tests & SonarQube Scan') {
+            steps {
+                script {
+                    sh "docker system prune -a -f"
+                    sh 'bash -o pipefail -c \'for i in {1..3}; do docker build -f test/Dockerfile -t online-sed/test . && break || ([ $i -lt 3 ] && echo \"Failed, retrying in 15 seconds...\" && sleep 15); done\''
+                    sh "bash -o pipefail -c 'docker run --rm online-sed/test ./test_scripts/execute_sonarqube_scan.sh ${GERRIT_REFSPEC} ${GERRIT_BRANCH} 2>&1 | tee execute_sonarqube_scan_test.log'"
+                    sh "bash -o pipefail -c 'docker run --rm online-sed/test ./test_scripts/execute_web_playwright.sh 2>&1 | tee execute_web_playwright_test.log'"
+                    sh "bash -o pipefail -c 'docker run --rm online-sed/test ./test_scripts/execute_api_server.sh 2>&1 | tee execute_api_server_test.log'"
+                }
+            }
+            post {
+                always {
+                    script {
+                        archiveArtifacts '*.log'
+                    }
+                }
+            }
+        }
+        stage('Linting Dockerfile') {
+            steps {
+                sh "${bob} lint-dockerfile"
+            }
+            post {
+                always {
+                    script {
+                        archiveArtifacts '*dockerfilelint.log'
+                    }
+                }
+            }
+        }
+        stage('Test Build Image') {
+            steps {
+                sh "${bob} generate-new-version build-image"
+            }
+            post {
+                always {
+                    script {
+                        sh "${bob} remove-image"
+                    }
+                }
+            }
+        }
+        }
+        post {
+          failure {
+              sh '''
+                  set +x
+               '''
+          }
+    }
+}
+
+// More about @Builder: http://mrhaki.blogspot.com/2014/05/groovy-goodness-use-builder-ast.html
+import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
+
+@Builder(builderStrategy = SimpleStrategy, prefix = '')
+class BobCommand {
+    def bobImage = 'bob.2.0:latest'
+    def envVars = [:]
+    def needDockerSocket = false
+
+    String toString() {
+        def env = envVars
+                .collect({ entry -> "-e ${entry.key}=\"${entry.value}\"" })
+                .join(' ')
+
+        def cmd = """\
+            |docker run
+            |--init
+            |--rm
+            |--workdir \${PWD}
+            |--user \$(id -u):\$(id -g)
+            |-v \${PWD}:\${PWD}
+            |-v /etc/group:/etc/group:ro
+            |-v /etc/passwd:/etc/passwd:ro
+            |-v \${HOME}/.m2:\${HOME}/.m2
+            |-v \${HOME}/.docker:\${HOME}/.docker
+            |${needDockerSocket ? '-v /var/run/docker.sock:/var/run/docker.sock' : ''}
+            |${env}
+            |\$(for group in \$(id -G); do printf ' --group-add %s' "\$group"; done)
+            |--group-add \$(stat -c '%g' /var/run/docker.sock)
+            |${bobImage}
+            |"""
+        return cmd
+                .stripMargin()           // remove indentation
+                .replace('\n', ' ')      // join lines
+                .replaceAll(/[ ]+/, ' ') // replace multiple spaces by one
+    }
+}
+      

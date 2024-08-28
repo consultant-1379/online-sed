@@ -1,0 +1,1576 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "additionalProperties": false,
+  "version": "1.0.1",
+  "definitions": {
+    "schedules": {
+      "description": "This must be a valid schedules array",
+      "format": "objectArray",
+      "type": "array",
+      "objectInfo": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "every": {
+              "type": "string",
+              "$ref": "#/definitions/time_interval"
+            },
+            "start": {
+              "optional": true,
+              "type": "string",
+              "$ref": "#/definitions/date_time"
+            },
+            "stop": {
+              "optional": true,
+              "type": "string",
+              "$ref": "#/definitions/date_time"
+            }
+          }
+        }
+      }
+    },
+    "time_interval": {
+      "description": "This must be a valid time interval.",
+      "pattern": "^(\\d+w)?(\\d+d)?(\\d+h)?(\\d+m)?$",
+      "type": "string",
+      "validationMessage": "The value format must be <number>w<number>d<number>h<number>m. The interval values can be combined. Example value: 1w2d3h4m."
+    },
+    "date_time": {
+      "description": "This must be a valid Date Time pair.",
+      "type": "string",
+      "pattern": "^[0-9]{1,4}\\-[0-9]{1,2}\\-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}$",
+      "validationMessage": "The input date should not be in the past. The value format must be YYYY-mm-ddTHH:MM:SS.",
+      "format": "datetime-local"
+    },
+    "any_string": {
+      "description": "This must be any string.",
+      "pattern": "^.+$",
+      "type": "string"
+    },
+    "true_false_default_true": {
+      "description": "This must be either true, or false.",
+      "enum": [
+        "true",
+        "false"
+      ],
+      "type": "string",
+      "defaultValue": "true"
+    },
+    "true_false_default_false": {
+      "description": "This must be either true, or false.",
+      "enum": [
+        "true",
+        "false"
+      ],
+      "type": "string",
+      "defaultValue": "false"
+    },
+    "toleration": {
+      "description": "This must be a valid Kubernetes toleration Array",
+      "format": "kubernetesToleration",
+      "type": "array",
+      "tolerationInfo": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "$ref": "#/definitions/any_string_no_space"
+            },
+            "operator": {
+              "type": "string",
+              "$ref": "#/definitions/toleration_operator"
+            },
+            "effect": {
+              "type": "string",
+              "$ref": "#/definitions/toleration_effect"
+            },
+            "value": {
+              "type": "string",
+              "$ref": "#/definitions/label_value"
+            }
+          }
+        }
+      }
+    },
+    "label_value": {
+      "description": "This must be a valid Kubernetes Label.",
+      "pattern": "^[a-zA-Z0-9]([a-zA-Z0-9_\\.\\-]{0,61}[a-zA-Z0-9])?$",
+      "type": "string",
+      "validationMessage": "Must be 63 characters or less. The allowed characters are alphanumeric, dashes, underscores, and dots."
+    },
+    "toleration_operator": {
+      "description": "This must be a valid Kubernetes Toleration operator.",
+      "type": "string",
+      "enum": ["Equal", "Exists"]
+    },
+    "toleration_effect": {
+      "description": "This must be a valid Kubernetes Toleration Effect.",
+      "type": "string",
+      "enum": ["NoSchedule", "PreferNoSchedule", "NoExecute"]
+    },
+    "any_string_no_space": {
+      "description": "This must be any string with no spaces.",
+      "pattern": "^[^\\s]*$",
+      "type": "string",
+      "validationMessage": "This can be any string with no spaces."
+    },
+    "integer_gt_0": {
+      "description": "This must be any integer",
+      "pattern": "^[1-9][0-9]*$",
+      "type": "string",
+      "validationMessage": "Must be an integer greater than 0.",
+      "optional": true
+    },
+    "any_string_password": {
+      "description": "This must be any string.",
+      "pattern": "^.+$",
+      "type": "string",
+      "format": "password"
+    },
+    "ddp_password": {
+      "description": "This must be any string and no space is allowed.",
+      "pattern": "^\\S+$",
+      "type": "string",
+      "format": "password"
+    },
+    "secret_name": {
+      "description": "This must be a string that contains no more than 253 characters, contain only lowercase alphanumeric characters, '-' or '.', start with an alphanumeric character, end with an alphanumeric character",
+      "pattern": "^(?=.{1,253}$)[a-z0-9]+([a-z0-9]*[-.]+[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "any_string_max_length_2": {
+      "description": "This must be any string of max length 2.",
+      "pattern": "^[a-zA-Z0-9]{1,2}$",
+      "type": "string",
+      "validationMessage": "Input must be between 1 and 2 characters long"
+    },
+    "any_string_max_length_32": {
+      "description": "This must be any string of max length 32.",
+      "pattern": "^[a-zA-Z0-9_\\-.]{1,32}$",
+      "type": "string",
+      "validationMessage": "Input must be between 1 and 32 characters long and can only contain the characters: a-z, A-Z, 0-9 and the special characters _ \\ - . "
+    },
+    "any_string_max_length_64": {
+      "description": "This must be any string of max length 64.",
+      "pattern": "^[a-zA-Z0-9_\\-.]{1,64}$",
+      "type": "string",
+      "validationMessage": "Input must be between 1 and 64 characters long and can only contain the characters: a-z, A-Z, 0-9 and the special characters _ \\ - . "
+    },
+    "any_string_max_length_128": {
+      "description": "This must be any string of max length 128.",
+      "pattern": "^[a-zA-Z0-9\\-_.]{1,128}$",
+      "type": "string",
+      "validationMessage": "Input must be between 1 and 128 characters long and can only contain the characters: a-z, A-Z, 0-9 and the special characters _ \\ - . "
+    },
+    "hostname": {
+      "description": "This must be a valid hostname.",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*$",
+      "type": "string",
+      "validationMessage": "Input can only contain the following characters: a-z, 0-9, and a hyphen (-).",
+      "format": "big-text"
+    },
+    "sentinel_hostname": {
+      "description": "This must be a valid hostname with each element 1 to 63 characters. The entire hostname can be at most 253 characters long including ASCII(7) letters from a to z, the digits from 0 to 9, and a hyphen (-).",
+      "pattern": "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$",
+      "type": "string",
+      "validationMessage": "Input must follow guideline given in the description"
+    },
+    "registry_url": {
+      "description": "This must be a valid registry url followed by /proj-enm.",
+      "pattern": "^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*)(.*)$",
+      "type": "string",
+      "validationMessage": "Input must be a valid registry url."
+    },
+    "registry_url_proj_enm": {
+      "description": "This must be a valid registry url followed by /proj-enm.",
+      "pattern": "^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*)(.*)(\\/proj-enm)$",
+      "type": "string",
+      "validationMessage": "Input must be a valid registry url followed by /proj-enm"
+    },
+    "ipv4": {
+      "description": "This must be a valid IPv4 address.",
+      "pattern": "^(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$",
+      "type": "string",
+      "preventDuplicates": true,
+      "validationMessage": "Input must follow the IPv4 format and can only contain the following characters: 0-9 and ."
+    },
+    "ipv4_cidr": {
+      "description": "This must be a valid IPv4 CIDR.",
+      "pattern": "^(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)/([1-9]|[12][0-9]|3[0-2])$",
+      "type": "string",
+      "preventDuplicates": true,
+      "validationMessage": "Input must follow the IPv4 CIDR format and can only contain the following characters: 0-9 and /"
+    },
+    "ipv4_allow_duplicates": {
+      "validationMessage": "Input must follow the IPv4 format and can only contain numeric characters: 0-9 and the special character { . }",
+      "pattern": "^(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$",
+      "description": "This must be a valid IPv4 address.",
+      "type": "string"
+    },
+    "ipv6_cidr": {
+      "description": "This must be a valid IPv6 CIDR.",
+      "pattern": "^\\s*((?:(?:(?:[0-9A-Fa-f]{1,4}:){7}(?:[0-9A-Fa-f]{1,4}|:))|(?:(?:[0-9A-Fa-f]{1,4}:){6}(?::[0-9A-Fa-f]{1,4}|(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){5}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){4}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,3})|(?:(?::[0-9A-Fa-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){3}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,4})|(?:(?::[0-9A-Fa-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){2}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,5})|(?:(?::[0-9A-Fa-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){1}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,6})|(?:(?::[0-9A-Fa-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?::(?:(?:(?::[0-9A-Fa-f]{1,4}){1,7})|(?:(?::[0-9A-Fa-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(?:%.+)?)\\/(6[0-4]|[3-5][0-9]|2[4-9])$",
+      "type": "string",
+      "preventDuplicates": true,
+      "validationMessage": "Input must follow the IPv6 CIDR format and can only contain the following characters: A-F, 0-9, : and /"
+    },
+    "ipv6": {
+      "description": "This must be a valid IPv6 address.",
+      "pattern": "^\\s*(?:(?:(?:[0-9A-Fa-f]{1,4}:){7}(?:[0-9A-Fa-f]{1,4}|:))|(?:(?:[0-9A-Fa-f]{1,4}:){6}(?::[0-9A-Fa-f]{1,4}|(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){5}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){4}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,3})|(?:(?::[0-9A-Fa-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){3}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,4})|(?:(?::[0-9A-Fa-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){2}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,5})|(?:(?::[0-9A-Fa-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){1}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,6})|(?:(?::[0-9A-Fa-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?::(?:(?:(?::[0-9A-Fa-f]{1,4}){1,7})|(?:(?::[0-9A-Fa-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(?:%.+)?\\s*$",
+      "type": "string",
+      "preventDuplicates": true,
+      "validationMessage": "Input must follow the IPv6 format and can only contain the following characters: a-f, A-F, 0-9 and :"
+    },
+    "ipv6_allow_duplicates": {
+      "validationMessage": "Input must follow the IPv6 CIDR format and can only contain the following alphanumeric characters: A-F, 0-9, and the special characters { : / }",
+      "pattern": "^\\s*(?:(?:(?:[0-9A-Fa-f]{1,4}:){7}(?:[0-9A-Fa-f]{1,4}|:))|(?:(?:[0-9A-Fa-f]{1,4}:){6}(?::[0-9A-Fa-f]{1,4}|(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){5}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){4}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,3})|(?:(?::[0-9A-Fa-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){3}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,4})|(?:(?::[0-9A-Fa-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){2}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,5})|(?:(?::[0-9A-Fa-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){1}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,6})|(?:(?::[0-9A-Fa-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?::(?:(?:(?::[0-9A-Fa-f]{1,4}){1,7})|(?:(?::[0-9A-Fa-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(?:%.+)?\\s*$",
+      "description": "This must be a valid IPv6 CIDR.",
+      "type": "string"
+    },
+    "true_false": {
+      "description": "This must be either true, or false.",
+      "enum": [
+        "true",
+        "false"
+      ],
+      "type": "string"
+    },
+    "max_start_ups": {
+      "description": "Max start up value (start:rate:full).",
+      "pattern": "^\\d{0,3}:\\d{0,3}:\\d{0,3}$",
+      "type": "string",
+      "validationMessage": "Input must be in the format (start:rate:full)"
+    },
+    "ip_version": {
+      "description": "This must be either IPv4, Dual, or IPv6_EXT.",
+      "enum": [
+        "IPv4",
+        "Dual",
+        "IPv6_EXT"
+      ],
+      "type": "string"
+    },
+    "domain": {
+      "description": "Value should be a domain.",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*$",
+      "type": "string"
+    },
+    "write_relabel_configs": {
+      "description": "This must be a valid extraSecretMounts array.",
+      "format": "objectArray",
+      "type": "array",
+      "objectInfo": {
+        "items": {
+          "properties": {
+            "source_labels": {
+              "type": "array",
+              "$ref": "#/definitions/label_value_array",
+              "optional": true
+            },
+            "regex": {
+              "type": "string",
+              "$ref": "#/definitions/any_string_no_space",
+              "optional": true
+            },
+            "action": {
+              "type": "string",
+              "$ref": "#/definitions/any_string_no_space",
+              "optional": true
+            }
+          }
+        }
+      }
+    },
+    "label_value_array": {
+      "description": "This must be comma separated list of valid Kubernetes Labels.",
+      "pattern": "^[a-zA-Z0-9]([a-zA-Z0-9_\\.\\-]{0,61}[a-zA-Z0-9])?$",
+      "type": "array",
+      "validationMessage": "Each label value in the array must be 63 characters or less. The allowed characters are alphanumeric, dashes, underscores, and dots."
+    },
+    "url": {
+      "description": "This must be a valid url.",
+      "pattern": "^(https?:\\/\\/)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*)(.*)$",
+      "type": "string",
+      "validationMessage": "Input must start with 'http://' or 'https://' followed by a valid url path"
+    },
+    "positive_integer": {
+      "description": "This must be a positive integer.",
+      "pattern": "^\\d+$",
+      "type": "string"
+    },
+    "positive_integer_greater_than_0": {
+      "description": "This must be a positive integer.",
+      "pattern": "^[1-9][0-9]*$",
+      "type": "string",
+      "validationMessage": "Input must be a positive integer greater than 0"
+    },
+    "integer_hour": {
+      "description": "This must be a positive integer between 0 and 23.",
+      "pattern": "^(?:[0-9]|0[1-9]|1[0-9]|2[0-3])$",
+      "type": "string",
+      "validationMessage": "Input must be between 0 and 23"
+    },
+    "integer_1_10": {
+      "description": "This must be a positive integer between 1 and 10.",
+      "pattern": "^([1-9]|10)$",
+      "type": "string",
+      "validationMessage": "Input must be between 1 and 10 inclusive"
+    },
+    "integer_1_30": {
+      "description": "This must be a positive integer between 1 and 30.",
+      "pattern": "^(?:[1-9]|0[1-9]|1[0-9]|2[0-9]|30)$",
+      "type": "string",
+      "validationMessage": "Input must be between 1 and 30 inclusive"
+    },
+    "integer_00_59": {
+      "description": "This must be a positive integer between 00 and 59.",
+      "pattern": "^[0-5]?[0-9]$",
+      "type": "string",
+      "validationMessage": "Input must be between 0 and 59 inclusive"
+    },
+    "integer_0_to_255": {
+      "description": "This value must be an integer between 0 and 255.",
+      "pattern": "^([0-9]|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])$",
+      "type": "string",
+      "validationMessage": "Input must be between 0 and 255 inclusive"
+    },
+    "integer_1_to_255": {
+      "description": "This value must be an integer between 1 and 255.",
+      "pattern": "^([1-9]|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])$",
+      "type": "string",
+      "validationMessage": "Input must be between 1 and 255 inclusive"
+    },
+    "nodeExporter_port": {
+      "description": "Use 9100/9690, or any free port based on availability.",
+      "pattern": "^(0|6[0-5][0-5][0-3][0-5]|[1-5][0-9][0-9][0-9][0-9]|[1-9][0-9]{0,3})$",
+      "type": "string",
+      "validationMessage": "Input must be between 0 and 99999 inclusive"
+    },
+    "scc_resources": {
+      "description": "This must be a valid scc resource object",
+      "type": "array",
+      "$ref": "#/definitions/any_string_no_space"
+    },
+    "node_selector": {
+      "description": "This must be a valid node selector object",
+      "type": "object",
+      "format": "nodeSelector",
+      "nodeSelectorInfo": {
+        "items": {
+          "properties": {
+            "key": {
+              "type": "string",
+              "$ref": "#/definitions/any_string_no_space"
+            },
+            "value": {
+              "type": "string",
+              "$ref": "#/definitions/any_string_no_space"
+            }
+          }
+        }
+      }
+    }
+    ,
+    "annotation": {
+      "description": "This can be any custom annotation.",
+      "type": "object",
+      "format": "customObject",
+      "customObjectInfo": {
+        "items": {
+          "properties": {
+            "key": {
+              "type": "string",
+              "$ref": "#/definitions/any_string_no_space"
+            },
+            "value": {
+              "type": "string",
+              "$ref": "#/definitions/any_string_no_space"
+            }
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "parameters": {
+      "additionalProperties": false,
+      "default": {},
+      "description": "Please fill in all required fields.",
+      "properties": {
+        "sccResources": {
+          "$ref": "#/definitions/scc_resources",
+          "category": "configuration",
+          "displayName": "SCC Resources",
+          "example": "[val1, val2]",
+          "description": "Global SCC resources",
+          "optional": true,
+          "keys": [
+            "global.sccResources"
+          ],
+          "immutable": true
+        },
+        "storageClassCephCapped": {
+          "$ref": "#/definitions/any_string",
+          "category": "configuration",
+          "displayName": "Storage class ceph capped",
+          "example": "",
+          "description": "Read Write Many (RWX) Storage class ceph capped",
+          "optional": true,
+          "keys": [
+            "global.rwx.storageClassCephCapped"
+          ]
+        },
+        "externalStorageCredentials": {
+          "$ref": "#/definitions/any_string",
+          "category": "configuration",
+          "displayName": "Bro external storage credentials",
+          "example": "",
+          "description": "If you want to enable automatic export of scheduled backups, you must create a Kubernetes Secret containing access credentials for the SFTP server.",
+          "keys": [
+            "global.bro.externalStorageCredentials"
+          ],
+          "optional": true
+        },
+        "rwx_storageClass": {
+          "$ref": "#/definitions/any_string",
+          "category": "storage",
+          "displayName": "RWX storage class",
+          "example": "nfs-enm",
+          "description": "Read Write Many (RWX) storage class.",
+          "immutable": true,
+          "keys": [
+            "global.rwx.storageClass",
+            "eric-data-search-engine.persistence.backup.persistentVolumeClaim.storageClassName",
+            "eric-data-eshistory-search-engine.persistence.backup.persistentVolumeClaim.storageClassName",
+            "eric-enm-ddc.eric-oss-ddc.persistentVolumeClaim.storageClassName"
+          ]
+        },
+        "rwo_storageClass": {
+          "$ref": "#/definitions/any_string",
+          "category": "storage",
+          "displayName": "RWO storage class",
+          "example": "network-block",
+          "description": "Read Write Once (RWO) storage class.",
+          "immutable": true,
+          "keys": [
+            "eric-data-graph-database-nj.persistentVolumeClaim.storageClass",
+            "eric-data-graph-database-nj.persistentVolumeClaim.backup.storageClass",
+            "eric-data-graph-database-nj.persistentVolumeClaim.logging.storageClass",
+            "eric-ctrl-bro.persistence.persistentVolumeClaim.storageClassName",
+            "eric-data-search-engine.persistence.data.persistentVolumeClaim.storageClassName",
+            "eric-data-search-engine.persistence.master.persistentVolumeClaim.storageClassName",
+            "eric-data-eshistory-search-engine.persistence.data.persistentVolumeClaim.storageClassName",
+            "eric-data-eshistory-search-engine.persistence.master.persistentVolumeClaim.storageClassName",
+            "eric-enm-int-pm-server.eric-pm-server.server.persistentVolume.storageClass",
+            "eric-enm-int-pm-alert-manager.eric-pm-alert-manager.persistence.persistentVolumeClaim.storageClassName",
+            "global.persistentVolumeClaim.storageClass"
+          ]
+        },
+        "host_system_identifier": {
+          "$ref": "#/definitions/any_string_max_length_32",
+          "category": "configuration",
+          "displayName": "Host system identifier",
+          "example": "ieatenmc12a009",
+          "immutable": true,
+          "description": "The value must be a string with a maximum length of 32 characters. To distinguish between the ENM deployments, a hostname is displayed on the UI, on the right-hand side of the ENM system bar. The host_system_identifier is a subdomain of the FQDN, which distinguishes these deployments.",
+          "keys": [
+            "global.enmProperties.host_system_identifier"
+          ]
+        },
+        "ingress_RBAC_create": {
+          "$ref": "#/definitions/true_false_default_true",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 RBAC create",
+          "description": "A boolean parameter controlling whether RBAC resources are created.",
+          "longDescription": [
+            "A boolean parameter controlling whether RBAC resources are created.",
+            "The default value is set to true for ENM to create the required RBAC configuration.",
+            "If custom RBAC is required, see Router RBAC Custom Role Prerequisites in the",
+            "Cloud Native ENM Initial Installation 8/1531-AOM 901 151 Uen F1 or",
+            "Cloud Native ENM Upgrade Instructions. 3/153 72-AOM 901 151 Uen G1 documents."
+          ],
+          "keys": [
+            "eric-net-ingress-l4.rbac.create"
+          ]
+        },
+        "ingress_RBAC_service_account_name": {
+          "$ref": "#/definitions/any_string",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 service account name",
+          "example": "eric-net-ingress-l4-service-account",
+          "description": "The name of the Service Account to be used for access control. If no name is provided, the Service Account name eric-net-ingress-l4 is used. When \"ingress_RBAC_create\" is set to false, this must be populated as described in Router RBAC Custom Role Prerequisites.",
+          "longDescription": [
+            "The name of the Service Account to be used for access control. If no name is provided,",
+            "the Service Account name eric-net-ingress-l4 is used. When \"ingress_RBAC_create\" is set to false serviceAccountName",
+            "must be populated as described in Router RBAC Custom Role Prerequisites in the Cloud Native ENM Initial Installation 8/1531-AOM 901 151 Uen F1",
+            "or Cloud Native ENM Upgrade Instructions. 3/153 72-AOM 901 151 Uen G1 documents."
+          ],
+          "keys": [
+            "eric-net-ingress-l4.rbac.serviceAccountName"
+          ],
+          "displayIfNot": ["ingress_RBAC_create"],
+          "optional": true
+        },
+        "COM_INF_LDAP_ROOT_SUFFIX": {
+          "$ref": "#/definitions/any_string",
+          "category": "security",
+          "displayName": "Suffix for ENM users LDAP tree",
+          "example": "dc=ieatenmc12a,dc=com",
+          "immutable": true,
+          "longDescription": [
+            "Suffix for ENM users LDAP tree. RFC 4511 - Lightweight Directory Access Protocol",
+            "(LDAP):",
+            "The Protocol RFC 4512 - Lightweight Directory",
+            "Access Protocol (LDAP):",
+            "Directory Information Models"
+          ],
+          "keys": [
+            "global.enmProperties.COM_INF_LDAP_ROOT_SUFFIX"
+          ]
+        },
+        "COM_INF_LDAP_ADMIN_CN": {
+          "$ref": "#/definitions/any_string",
+          "category": "security",
+          "displayName": "COM INF LDAP ADMIN CN",
+          "immutable": true,
+          "example": "uid=ssouser,ou=people,dc=ieatenmc12a,dc=com",
+          "keys": [
+            "global.enmProperties.COM_INF_LDAP_ADMIN_CN"
+          ]
+        },
+        "ipv4_vips_ipaddress_start": {
+          "category": "doNotDisplay",
+          "$ref": "#/definitions/ipv4_allow_duplicates",
+          "optional": true,
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "ipv4_vips_ipaddress_end": {
+          "category": "doNotDisplay",
+          "$ref": "#/definitions/ipv4_allow_duplicates",
+          "optional": true,
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "ipv6_vips_ipaddress_start": {
+          "category": "doNotDisplay",
+          "$ref": "#/definitions/ipv6_allow_duplicates",
+          "optional": true,
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "ipv6_vips_ipaddress_end": {
+          "category": "doNotDisplay",
+          "$ref": "#/definitions/ipv6_allow_duplicates",
+          "optional": true,
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "enmHost": {
+          "$ref": "#/definitions/hostname",
+          "category": "configuration",
+          "displayName": "ENM Host",
+          "example": "ieatenmc12a009.athtem.eei.ericsson.se",
+          "description": "ENM launcher page URL used by Ingress to expose the HTTPs routes from outside the cluster to services within the cluster.",
+          "immutable": true,
+          "keys": [
+            "global.ingress.enmHost"
+          ]
+        },
+        "ingressClass": {
+          "$ref": "#/definitions/any_string",
+          "category": "configuration",
+          "displayName": "Ingress controller class name",
+          "example": "ingress-nginx ",
+          "description": "Ingress controller class name.",
+          "immutable": true,
+          "longDescription": [
+            "Default value of ingress class name should be ingress-nginx.",
+            "Note:",
+            "— When upgrading the cENM system, ensure to reuse the exact values as used on From state. ",
+            "If the value class is not used or available on From state, the upgrade leads to ENM UI outage during the upgrade.",
+            "When the value class is not used or available on the From State, refer to the following steps to proceed with updating the field.",
+            "— Ensure the Class value to be mentioned must be unique in the cluster. Run the following command to obtain existing,",
+            "ingress class names:,",
+            ">> kubectl get ingressClass --all-namespaces"
+          ],
+          "keys": [
+            "global.ingress.class"
+          ]
+        },
+        "svc_FM_vip_ipaddress": {
+          "$ref": "#/definitions/ipv4",
+          "autoPopulate": "ipv4_vips",
+          "category": "ipv4",
+          "displayName": "FM IPv4 Virtual IP",
+          "example": "10.42.14.164",
+          "keys": [
+            "global.vips.svc_FM_vip_ipaddress"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "svc_FM_vip_fwd_ipaddress": {
+          "$ref": "#/definitions/ipv4",
+          "autoPopulate": "ipv4_vips",
+          "category": "ipv4",
+          "displayName": "SVC FM forward IPv4 Virtual IP",
+          "example": "10.42.14.172",
+          "keys": [
+            "global.vips.svc_FM_vip_fwd_ipaddress"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "svc_CM_vip_ipaddress": {
+          "$ref": "#/definitions/ipv4",
+          "autoPopulate": "ipv4_vips",
+          "category": "ipv4",
+          "displayName": "CM IPv4 Virtual IP",
+          "example": "10.42.14.165",
+          "keys": [
+            "global.vips.svc_CM_vip_ipaddress"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "svc_PM_vip_ipaddress": {
+          "$ref": "#/definitions/ipv4",
+          "autoPopulate": "ipv4_vips",
+          "category": "ipv4",
+          "displayName": "PM IPv4 Virtual IP",
+          "example": "10.42.14.166",
+          "keys": [
+            "global.vips.svc_PM_vip_ipaddress"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "amos_vip_address": {
+          "$ref": "#/definitions/ipv4",
+          "category": "ipv4",
+          "autoPopulate": "ipv4_vips",
+          "displayName": "AMOS IPv4 Virtual IP",
+          "example": "10.42.14.168",
+          "keys": [
+            "global.vips.amos_vip_address"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "general_scripting_vip_address": {
+          "$ref": "#/definitions/ipv4",
+          "category": "ipv4",
+          "autoPopulate": "ipv4_vips",
+          "displayName": "General scripting IPv4 Virtual IP",
+          "example": "10.42.14.169",
+          "keys": [
+            "global.vips.general_scripting_vip_address"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "visinamingsb_service": {
+          "$ref": "#/definitions/ipv4",
+          "category": "ipv4",
+          "autoPopulate": "ipv4_vips",
+          "displayName": "Visinamingsb service IPv4 Virtual IP",
+          "example": "10.42.14.171",
+          "keys": [
+            "global.vips.visinamingsb_service"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "itservices_0_vip_address": {
+          "$ref": "#/definitions/ipv4",
+          "category": "ipv4",
+          "autoPopulate": "ipv4_vips",
+          "displayName": "Itservices 0 IPv4 Virtual IP",
+          "example": "10.42.14.173",
+          "keys": [
+            "global.vips.itservices_0_vip_address"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "itservices_1_vip_address": {
+          "$ref": "#/definitions/ipv4",
+          "category": "ipv4",
+          "autoPopulate": "ipv4_vips",
+          "displayName": "Itservices 1 IPv4 Virtual IP",
+          "example": "10.42.14.174",
+          "keys": [
+            "global.vips.itservices_1_vip_address"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "timezone": {
+          "$ref": "#/definitions/any_string",
+          "category": "configuration",
+          "displayName": "Timezone",
+          "example": "Europe/Dublin",
+          "description": "cENM timezone.",
+          "immutable": true,
+          "longDescription": [
+            "cENM timezone.",
+            "Note: cENM and Kubernetes cluster including control plane and worker nodes must be in the same timezone."
+          ],
+          "keys": [
+            "global.timezone"
+          ]
+        },
+        "ip_version": {
+          "$ref": "#/definitions/ip_version",
+          "category": "configuration",
+          "displayName": "IP version",
+          "immutable": true,
+          "keys": [
+            "global.ip_version"
+          ]
+        },
+        "svc_FM_vip_ipv6address": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ipv6",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "SVC FM IPv6 Virtual IP",
+          "example": "2001:1b70:6207:2c:0:1016:1001:1",
+          "keys": [
+            "global.vips.svc_FM_vip_ipv6address"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "svc_CM_vip_ipv6address": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ipv6",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "SVC CM IPv6 Virtual IP",
+          "example": "2001:1b70:6207:2c:0:1016:1001:2",
+          "keys": [
+            "global.vips.svc_CM_vip_ipv6address"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "svc_PM_vip_ipv6address": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ipv6",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "SVC PM IPv6 Virtual IP",
+          "example": "2001:1b70:6207:2c:0:1016:1001:3",
+          "keys": [
+            "global.vips.svc_PM_vip_ipv6address"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "amos_service_IPv6_IPs": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ipv6",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "AMOS service IPv6 Virtual IP",
+          "example": "2001:1b70:6207:2c:0:1016:1001:4",
+          "keys": [
+            "global.vips.amos_service_IPv6_IPs"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "scripting_service_IPv6_IPs": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ipv6",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "Scripting service IPv6 Virtual IP",
+          "example": "2001:1b70:6207:2c:0:1016:1001:6",
+          "keys": [
+            "global.vips.scripting_service_IPv6_IPs"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "visinamingsb_service_IPv6_IPs": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ipv6",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "Visinamingsb service IPv6 Virtual IP",
+          "example": "2001:1b70:6207:2c:0:1016:1001:8",
+          "keys": [
+            "global.vips.visinamingsb_service_IPv6_IPs"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "itservices_service_0_IPv6_IPs": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ipv6",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "Itservices service 0 IPv6 Virtual IP",
+          "example": "2001:1b70:6207:2c:0:1016:1001:10",
+          "keys": [
+            "global.vips.itservices_service_0_IPv6_IPs"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "itservices_service_1_IPv6_IPs": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ipv6",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "Itservices service 1 IPv6 Virtual IP",
+          "example": "2001:1b70:6207:2c:0:1016:1001:12",
+          "keys": [
+            "global.vips.itservices_service_1_IPv6_IPs"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "svc_FM_vip_fwd_ipv6address": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ipv6",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "SVC FM forward IPv6 Virtual IP",
+          "example": "2001:1b70:6207:2c:0:1016:1001:14",
+          "keys": [
+            "global.vips.svc_FM_vip_fwd_ipv6address"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "securityServiceLoadBalancerIP": {
+          "$ref": "#/definitions/ipv4",
+          "category": "ipv4",
+          "autoPopulate": "ipv4_vips",
+          "displayName": "Security service load balancer IPv4 virtual IP",
+          "example": "10.150.22.72",
+          "keys": [
+            "global.loadBalancerIP.securityServiceLoadBalancerIP"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "securityServiceLoadBalancerIP_IPv6": {
+          "$ref": "#/definitions/ipv6",
+          "category": "security",
+          "autoPopulate": "ipv6_vips",
+          "displayName": "Security service load balancer IPv6 virtual IP",
+          "example": "2001:1b70:82b9:012e::1:4",
+          "keys": [
+            "global.loadBalancerIP.securityServiceLoadBalancerIP_IPv6"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"],
+          "optional": true
+        },
+        "pki_entity_profile_dn_country_name": {
+          "$ref": "#/definitions/any_string_max_length_2",
+          "category": "security",
+          "displayName": "PKI entity profile distinguished name country name",
+          "example": "US",
+          "description": "Country name to insert in the distinguished name of the certificate. Maximum length of 2 characters.",
+          "immutable": true,
+          "longDescription": [
+            "Country Name to insert in the DN of the certificate. Do not enter the full name of the country,",
+            "use abbreviations like such as IT, UK, IE. String maximum length of 2 characters.",
+            "See ENM Public Key Infrastructure System Administrator Guide. 2/1543-AOM901 151-3-V1"
+          ],
+          "optional": true,
+          "keys": [
+            "global.enmProperties.PKI_EntityProfile_DN_COUNTRY_NAME"
+          ]
+        },
+        "PKI_EntityProfile_DN_ORGANIZATION": {
+          "$ref": "#/definitions/any_string_max_length_64",
+          "category": "security",
+          "displayName": "PKI entity profile distinguished name organization",
+          "example": "Ericsson",
+          "description": "Organization to insert in the DN of the certificate. Maximum length of 64 characters.",
+          "immutable": true,
+          "longDescription": [
+            "Organization to insert in the DN of the certificate. Ensure that the value is the set to a string value only.",
+            "The maximum length of the string is 64 characters.",
+            "See ENM Public Key Infrastructure System Administrator Guide. 2/1543-AOM901 151-3-V1"
+          ],
+          "optional": true,
+          "keys": [
+            "global.enmProperties.PKI_EntityProfile_DN_ORGANIZATION"
+          ]
+        },
+        "PKI_EntityProfile_DN_ORGANIZATION_UNIT": {
+          "$ref": "#/definitions/any_string_max_length_64",
+          "category": "security",
+          "displayName": "PKI entity profile distinguished name organization unit",
+          "example": "ec-ems_OAM",
+          "description": "Organization unit to insert in the DN of the certificate. Maximum length of 64 characters.",
+          "immutable": true,
+          "longDescription": [
+            "Organization unit to insert in the DN of the certificate. Where more than one cENM system is being deployed,",
+            "a unique string value must be supplied for each cENM deployment per customer. The maximum length of the string is 64 characters.",
+            "See ENM Public Key Infrastructure System Administrator Guide. 2/1543-AOM901 151-3-V1"
+          ],
+          "optional": true,
+          "keys": [
+            "global.enmProperties.PKI_EntityProfile_DN_ORGANIZATION_UNIT"
+          ]
+        },
+        "certificatesRevListDistributionPointService_IPv4_enable": {
+          "$ref": "#/definitions/true_false",
+          "category": "security",
+          "displayName": "Enable CDP point service Ipv4",
+          "description": "Flag to enable IPv4 address for CRL Distribution Point field in a certificate.",
+          "immutable": true,
+          "longDescription": [
+            "If true, security certificates include a CRL Distribution Point field for an IPv4 network.",
+            "If false, security certificates do not include a CRL Distribution Point field for an IPv4 network.",
+            "The recommended default value to be set is true."
+          ],
+          "keys": [
+            "global.enmProperties.certificatesRevListDistributionPointServiceIpv4Enable"
+          ]
+        },
+        "certificates_rev_list_distribution_point_service_IPv6_enable": {
+          "$ref": "#/definitions/true_false",
+          "category": "security",
+          "displayName": "Enable CDP point service Ipv6",
+          "description": "Flag to enable IPv6 address for CRL Distribution Point field in a certificate.",
+          "immutable": true,
+          "longDescription": [
+            "If true, security certificates include a CRL Distribution Point field for an IPv6 network.",
+            "If false, security certificates do not include a CRL Distribution Point field for an IPv6 network.",
+            "This flag value must be set to false only because now baseline support for IPv6 network on cENM is not available.",
+            "See ENM Public Key Infrastructure System Administrator Guide. 2/1543-AOM901 151-3-V1"
+          ],
+          "keys": [
+            "global.enmProperties.certificatesRevListDistributionPointServiceIpv6Enable"
+          ]
+        },
+        "nodeSelector": {
+          "$ref": "#/definitions/node_selector",
+          "category": "configuration",
+          "displayName": "Node selector",
+          "example": "node: cENM_Nodes",
+          "description": "This is an optional configuration during the initial install and must be configured only if it is required to deploy cENM on specific nodes on a given cluster. Otherwise, leave as emtpy",
+          "optional": true,
+          "immutable": true,
+          "keys": [
+            "global.nodeSelector",
+            "eric-enmsg-security-service.nodeSelector"
+          ]
+        },
+        "eric-oss-ingress-controller-nx_nodeSelector": {
+          "$ref": "#/definitions/node_selector",
+          "category": "ingressnx",
+          "displayName": "Ingress NX NodeSelector",
+          "example": "node: cENM_Nodes",
+          "description": "This is an optional configuration during the initial install and must be configured only if it is required to deploy cENM on specific nodes on a given cluster. Otherwise, leave as emtpy",
+          "longDescription": [
+            "This field can be used for controlling the scheduling of Layer 7 Ingress controller pods explicitly when needed.",
+            "This configuration must be used only if it is required to deploy Layer 7 Ingress controller pods on ",
+            "specific nodes in a given cluster contact your cluster admin to identify deployment requirements."
+          ],
+          "optional": true,
+          "keys": [
+            "eric-oss-ingress-controller-nx.nodeSelector"
+          ]
+        },
+        "tolerations": {
+          "$ref": "#/definitions/toleration",
+          "category": "configuration",
+          "displayName": "Tolerations",
+          "example": "{[{key: node, value: routing, effect: NoSchedule, operator: Equal}]}",
+          "description": "This is an optional configuration during the initial install and must be configured only if it is required to deploy cENM on specific nodes on a given cluster. Otherwise, leave as empty",
+          "optional": true,
+          "keys": [
+            "global.tolerations"
+          ],
+          "immutable": true
+        },
+        "load_balancer_IP": {
+          "$ref": "#/definitions/ipv4",
+          "category": "ingressnx",
+          "displayName": "Ingress NX load balancer IPv4 Virtual IP",
+          "example": "10.42.14.167",
+          "longDescription": [
+            "Ingress NX load balancer IPv4 Virtual IP is used for enabling HTTP/HTTPS traffic to ENM host.",
+            "Depending on the value of the global IP version parameter the following parameter values must be set accordingly:",
+            "The loadBalancerIP field is used to assign IPv4 address to eric-ossingress-controller-external service of type",
+            "LoadBalancer in a cluster and is needed to deploy cENM supporting only IPv4 external communication"
+          ],
+          "keys": [
+            "eric-oss-ingress-controller-nx.service.loadBalancerIP"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "load_balancer_IP_IPv6": {
+          "$ref": "#/definitions/ipv6",
+          "category": "ingressnx",
+          "displayName": "Ingress NX load balancer IPv6 Virtual IP",
+          "example": "2001:1b70:82b9:9f::1:1b",
+          "longDescription": [
+            "Ingress NX load balancer IPv6 Virtual IP is used for enabling HTTP/HTTPS traffic to ENM host.",
+            "Depending on the value of the global IP version parameter the following parameter values must be set accordingly:",
+            "The loadBalancerIP_IPv6 field is used to assign IPv6 address to eric-oss-ingress-controllerexternal",
+            "service of type LoadBalancer in a cluster and is needed to deploy cENM supporting only IPv6 external communication."
+          ],
+          "keys": [
+            "eric-oss-ingress-controller-nx.service.loadBalancerIP_IPv6"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "annotations": {
+          "$ref": "#/definitions/annotation",
+          "category": "ingressnx",
+          "displayName": "Ingress NX annotations",
+          "example": "{metallb.universe.tf/loadBalancerIPs: \"10.42.14.167,2001:1b70:82b9:9f::1:1b\" }",
+          "description": "Used to add custom annotations to eric-oss-ingress-controller-nx.service. This is an optional parameter and the default value is {}. ",
+          "longDescription": [
+            "Ingress NX annotations are sed to add custom annotations to eric-oss-ingress-controller-nx.service. ",
+            "This is an optional parameter and the default value is {}. Contact your cluster admin to identify deployment requirements.",
+            "When upgrading the cENM system, it is allowed to introduce new annotation or update the existing annotations used on the 'From' State.Annotations:",
+            "Used to add custom annotations to. Contact your cluster administrator for the required annotations to enable dualstack support."
+          ],
+          "optional": true,
+          "keys": [
+            "eric-oss-ingress-controller-nx.service.annotations"
+          ],
+          "ipVersion": ["dual"]
+        },
+        "podNetworkCIDR": {
+          "$ref": "#/definitions/ipv4_cidr",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 network CIDR address",
+          "example": "192.168.0.0/16",
+          "description": "The podNetworkCIDR pool is used to assign IPv4 addresses to pods in a cluster.",
+          "longDescription": [
+            "The podNetworkCIDR pool is used to assign IPv4 addresses to pods in a cluster.",
+            "This is a Kubernetes cluster parameter, contact your local Kubernetes cluster administrator for this value."
+          ],
+          "keys": [
+            "eric-net-ingress-l4.podNetworkCIDR"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "secondaryNetworkCIDR": {
+          "$ref": "#/definitions/ipv4_cidr",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 secondary network CIDR address",
+          "example": "214.6.207.0/27",
+          "description": "The secondaryNetworkCIDR pool is used to sign IPv4 addresses to L4 Ingress solution using secondary network.",
+          "longDescription": [
+            "The secondaryNetworkCIDR pool is used to sign IPv4 addresses to L4 Ingress solution using secondary network. The IPs from this pool are used for ingress-l4 pod, and VIPS for Cloud Native ENM. This must be left to the default value of null when l4IngressOnSecondaryNetwork is not enabled for a deployment. Minimum size: /27"
+          ],
+          "keys": [
+            "eric-net-ingress-l4.l4IngressOnSecondaryNetwork.secondaryNetworkCIDR"
+          ],
+          "ipVersion": ["ipv4", "dual"],
+          "optional": true
+        },
+        "secondaryNetworkGateway": {
+          "$ref": "#/definitions/ipv4",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 network secondary network gateway address",
+          "example": " 214.6.207.1",
+          "description": "IP address of the gateway assigned to the secondary network.",
+          "longDescription": [
+            "IP address of the gateway assigned to the secondary network. This must be left to the default value of null when l4IngressOnSecondaryNetwork is not enabled for a deployment"
+          ],
+          "keys": [
+            "eric-net-ingress-l4.l4IngressOnSecondaryNetwork.secondaryNetworkGateway"
+          ],
+          "ipVersion": ["ipv4", "dual"],
+          "optional": true
+        },
+        "l4IngressSecondaryNetworkSubRangeStart": {
+          "$ref": "#/definitions/ipv4_cidr",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 secondary network sub range start",
+          "example": "214.6.207.1/27",
+          "description": "The l4IngressSecondaryNetworkSubRangeStart provides the initial range value from the secondary network pool to assign IP address to the ingress-l4 pods, IP value must be from the secondary Network CIDR Range.",
+          "longDescription": [
+            "The l4IngressSecondaryNetworkSubRangeStart provides the initial range value from the secondary network pool to assign IP address to the ingress-l4 pods, IP value must be from the secondary Network CIDR Range. This must be left to the default value of null when l4IngressOnSecondaryNetwork is not enabled for a deployment"
+          ],
+          "keys": [
+            "eric-net-ingress-l4.l4IngressOnSecondaryNetwork.l4IngressSecondaryNetworkSubRangeStart"
+          ],
+          "ipVersion": ["ipv4", "dual"],
+          "optional": true
+        },
+        "l4IngressSecondaryNetworkSubRangeEnd": {
+          "$ref": "#/definitions/ipv4_cidr",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 secondary network sub range start",
+          "example": "214.6.207.2/27",
+          "description": "The l4IngressSecondaryNetworkSubRangeEnd provides the end range value from the secondary network pool to assign IP address to the ingress-l4 pods",
+          "longDescription": [
+            "The l4IngressSecondaryNetworkSubRangeEnd provides the end range value from the secondary network pool to assign IP address to the ingress-l4 pods. IP value must be from secondary Network CIDR Range but must be greater than that of start range.This must be left to the default value of null when l4IngressOnSecondaryNetwork is not enabled for a deployment. "
+          ],
+          "keys": [
+            "eric-net-ingress-l4.l4IngressOnSecondaryNetwork.l4IngressSecondaryNetworkSubRangeEnd"
+          ],
+          "ipVersion": ["ipv4", "dual"],
+          "optional": true
+        },
+        "ingress_l4_secondaryNetworkNodeExternalInterfaceName": {
+          "$ref": "#/definitions/any_string",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 secondary network node external interface name",
+          "example": "node-external-interface-name",
+          "description": "pod network interface. ",
+          "longDescription": [
+            "pod network interface. This must be left to the default value of null when l4IngressOnSecondaryNetwork is not enabled for a deployment."
+          ],
+          "keys": [
+            "eric-net-ingress-l4.l4IngressOnSecondaryNetwork.nodeExternalInterfaceName"
+          ],
+          "ipVersion": ["ipv4", "dual"],
+          "optional": true
+        },
+        "cniMode": {
+          "$ref": "#/definitions/any_string",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 CNI Mode",
+          "example": "ipip",
+          "description": "If calico is the CNI and configured in an ipip mode, the value must be ipip. Otherwise, the value must be empty string.",
+          "keys": [
+            "eric-net-ingress-l4.cniMode"
+          ]
+        },
+        "hostPort": {
+          "$ref": "#/definitions/nodeExporter_port",
+          "category": "monitoring",
+          "displayName": "PM node exporter host port",
+          "example": "9100",
+          "longDescription": [
+            "Use 9100/9690, or any free port based on availability.",
+            "1. Run the following command to know if 9100 port is used by any other service.",
+            "kubectl get svc --all-namespaces|grep 9100",
+            "2. If 9100 is used by other SVC, then check for 9690 by running the same command.",
+            "3. If both 9100 and 9690 are used, then use any free port."
+          ],
+          "keys": [
+            "eric-enm-int-node-exporter.eric-pm-node-exporter.nodeExporter.service.hostPort"
+          ],
+          "alternateKeys": [
+            "eric-pm-node-exporter.nodeExporter.service.hostPort"
+          ]
+        },
+        "csarLite": {
+          "category": "doNotDisplay",
+          "$ref": "#/definitions/true_false",
+          "description": "This key is managed from the CSAR Lite toggle in the SED Setup page.",
+          "keys": ["sedMetadata.csarLite"]
+        },
+        "registry_url": {
+          "$ref": "#/definitions/registry_url_proj_enm",
+          "category": "configuration",
+          "displayName": "Image registry URL",
+          "example": "container-registry.eccd.local:30948/proj-enm",
+          "description": "URL of the private container registry for storing the Docker images retrieved from the CSAR package followed by the /proj-enm sub path",
+          "immutable": true,
+          "longDescription": [
+            "Note!",
+            "The /proj-enm sub path must be appended to the registry url provided."
+          ],
+          "keys": [
+            "global.registry.url"
+          ],
+          "displayIfNot": ["csarLite"]
+        },
+        "registry_url_internal": {
+          "$ref": "#/definitions/registry_url",
+          "category": "configuration",
+          "displayName": "Image registry URL",
+          "example": "container-registry.eccd.local:30948/repo",
+          "description": "URL of the private container registry for storing the Docker images.",
+          "immutable": true,
+          "keys": [
+            "global.registry.url"
+          ],
+          "displayIf": ["csarLite"]
+        },
+        "pullSecret": {
+          "$ref": "#/definitions/secret_name",
+          "category": "configuration",
+          "displayName": "Image registry pull secret",
+          "example": "csar-secret",
+          "immutable": true,
+          "longDescription": [
+            "Defines secret needed for pulling images from the container registry in the current namespace.",
+            "It must consist of lower case alphanumeric characters, and must start and end with an alphanumeric character."
+          ],
+          "keys": [
+            "global.pullSecret",
+            "global.registry.pullSecret"
+          ]
+        },
+        "certificatesRevListDistributionPointServiceDnsEnable": {
+          "$ref": "#/definitions/true_false",
+          "category": "security",
+          "displayName": "Certificates Rev List Distribution Point Service Dns Enable",
+          "description": "Flag to enable FQDN for CRL Distribution Point field in a certificate.",
+          "immutable": true,
+          "longDescription": [
+            "Flag to enable FQDN for CRL Distribution Point field in a certificate.",
+            "If true, security certificates include a CRL Distribution Point field based on a DNS name.",
+            "If false, security certificates do not include a CRL Distribution Point field based on a DNS name.",
+            "See ENM Public Key Infrastructure System Administrator Guide. 2/1543-AOM 901 151-3-V1"
+          ],
+          "keys": [
+            "global.enmProperties.certificatesRevListDistributionPointServiceDnsEnable"
+          ]
+        },
+        "publicKeyInfraRegAutorithyPublicServerName": {
+          "$ref": "#/definitions/any_string_max_length_128",
+          "category": "security",
+          "displayName": "PKI registration autorithy public server name",
+          "example": "cdp1.cdps.athtem.eei.ericsson.se",
+          "immutable": true,
+          "description": "Logical name of PKI RA server in a DNS table. Ensure that this value is set to a site-specific string or must be set as notAssigned if DNS is not used. The maximum length of the string is 128 characters.",
+          "longDescription": [
+            "Logical name of PKI RA server in a DNS table.",
+            "Do!",
+            "Ensure that this value is set to a site-specific string or must be set as notAssigned if DNS is not used. ",
+            "The maximum length of the string is 128 characters.",
+            "See ENM Public Key Infrastructure System Administrator Guide. 2/1543-AOM 901 151-3-V1"
+          ],
+          "keys": [
+            "global.enmProperties.publicKeyInfraRegAutorithyPublicServerName"
+          ]
+        },
+        "enforcedUserHardening": {
+          "$ref": "#/definitions/true_false",
+          "category": "security",
+          "displayName": "Enforce user hardening",
+          "description": "Flag to enable enforce user hardening. See enable enforce user hardening in ENM Node Hardening Guidelines and Instructions. If false, does not enforce stronger user policies. If set to true, then enforces stronger user policies.",
+          "longDescription": [
+            "Flag to enable Enforce User Hardening. See Enforce User Hardening in ENM Node Hardening Guidelines and Instructions.",
+            "If false, does not enforce stronger user policies. If set to true, then enforces stronger user policies.",
+            "Do!",
+            "The default value to be set is false.",
+            "After the ENM system is hardened, enabling the enforcedUserHardening, it is no more possible to disable it.",
+            "Restoring enforcedUserHardening to value false has no effect."
+          ],
+          "keys": [
+            "global.enmProperties.enforcedUserHardening"
+          ]
+        },
+        "ingressControllerLoadBalancerIP": {
+          "$ref": "#/definitions/ipv4_allow_duplicates",
+          "category": "ingressnx",
+          "displayName": "Ingress controller load balancer IPv4 Virtual IP",
+          "example": "10.150.22.72",
+          "keys": [
+            "global.loadBalancerIP.ingressControllerLoadBalancerIP"
+          ],
+          "ipVersion": ["ipv4", "dual"]
+        },
+        "ingressControllerLoadBalancerIP_IPv6": {
+          "$ref": "#/definitions/ipv6_allow_duplicates",
+          "category": "ingressnx",
+          "displayName": "Ingress controller load balancer IPv6 Virtual IP",
+          "example": "2001:1b70:82b9:012e::1:4",
+          "keys": [
+            "global.loadBalancerIP.ingressControllerLoadBalancerIP_IPv6"
+          ],
+          "ipVersion": ["ipv6_ext", "dual"]
+        },
+        "eric-net-ingress-l4_nodeSelector": {
+          "$ref": "#/definitions/node_selector",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 nodeSelector",
+          "example": "node: cENM_Nodes",
+          "description": "Used for controlling the scheduling of Layer 4 Ingress controller pods explicitly when needed.",
+          "longDescription": [
+            "Used for controlling the scheduling of Layer 4 Ingress controller pods explicitly when needed.",
+            "Use this configuration only if it is required to deploy Layer 4 Ingress controller pods on specific nodes in a cluster.",
+            "Labels applied on nodes must be persisted during any node maintenance actions. For example during a platform upgrade.",
+            "If a local label value is provided in this field, it always supersedes the global nodeSelector value for",
+            "scheduling Layer 4 Ingress controller pods based on the label provided in this field.",
+            "If local label value is not provided or set as null, the Layer 4 Ingress controller pods are deployed based",
+            "on values used for the global nodeSelector field value. If the global nodeSelector value is also not",
+            "provided or set as null, then Layer 4 Ingress controller pods can be deployed on any node that can be scheduled in a cluster."
+          ],
+          "optional": true,
+          "keys": [
+            "eric-net-ingress-l4.nodeSelector"
+          ]
+        },
+        "emailServer": {
+          "$ref": "#/definitions/domain",
+          "category": "configuration",
+          "displayName": "Email Server",
+          "example": "email.athtem.eei.ericsson.se",
+          "description": "IP address or hostname (FQDN) of the mail server to be used by ENM applications for sending email notifications.",
+          "longDescription": [
+            "Ensure that this value is set to a string, which is either IP address or hostname (FQDN) of the mail",
+            "server to be used by ENM applications for sending email notifications.",
+            "This allows services to send emails regarding performance, fault management, and other notifications to interested parties.",
+            "See chapter ENM Email Relay Service in ENM Product Description 1/1551-AOM 901 151-V1"
+          ],
+          "keys": [
+            "global.emailServer"
+          ]
+        },
+        "sentinelHostname": {
+          "$ref": "#/definitions/sentinel_hostname",
+          "category": "configuration",
+          "displayName": "Sentinel Hostname",
+          "example": "customerid-sentinel01-cenm",
+          "longDescription": [
+            "Hostname to be used for sentinel pod.",
+            "Do!",
+            "Where more than one ENM system is being deployed then a unique sentinel hostname value must be",
+            "supplied for each system per customer. Failure to do this results in an unsuccessful cENM license activation.",
+            "The value entered for sentinel hostname must adhere to the following convention:",
+            "1. Each element of the hostname must be from 1 to 63 characters long.",
+            "2. The entire hostname, including the dots, can be at most 253 characters long.",
+            "3. Valid characters for hostnames are ASCII(7) letters from a to z, the digits from 0 to 9, and a hyphen (-)",
+            "4. A hostname cannot start with a hyphen. Example format: customerid-<insertDeploymentSpecificNameHere>-cenm"
+          ],
+          "keys": [
+            "global.sentinelHostname"
+          ]
+        },
+        "cron": {
+          "$ref": "#/definitions/true_false",
+          "category": "storage",
+          "displayName": "Include CRON in full backup",
+          "description": "The cron file system is included in a full backup by default. If the customer wishes to exclude it from the backup, set it to false otherwise set it to true.",
+          "keys": [
+            "eric-enm-rwxpvc.defaultPaths.cron"
+          ]
+        },
+        "home": {
+          "$ref": "#/definitions/true_false",
+          "category": "storage",
+          "displayName": "Include Home in full backup",
+          "description": "The home file system is included in a full backup by default. If the customer wishes to exclude it from backup, set them to false otherwise set it to true.",
+          "keys": [
+            "eric-enm-rwxpvc.defaultPaths.home"
+          ]
+        },
+        "ddp_site_id":{
+          "$ref": "#/definitions/any_string",
+          "category": "monitoring",
+          "displayName": "DDP site id",
+          "example": "Seattle_1",
+          "keys": [
+            "eric-enm-ddc.eric-oss-ddc.autoUpload.ddpid"
+          ]
+        },
+        "ddc_account":{
+          "$ref": "#/definitions/any_string",
+          "category": "monitoring",
+          "displayName": "DDC account",
+          "example": "user@sftp.server.customer.net",
+          "longDescription": [
+            "The ddpid configuration is environment-specific, contact Ericsson Support for details of this value.",
+            "The account and password are customer-provided credentials of an accessible SFTP server where the",
+            "DDC files are staged and from there (optionally) sent to Ericsson DDP for processing."
+          ],
+          "keys": [
+            "eric-enm-ddc.eric-oss-ddc.autoUpload.account"
+          ]
+        },
+        "ddc_password":{
+          "$ref": "#/definitions/ddp_password",
+          "category": "monitoring",
+          "displayName": "DDC password",
+          "example": "Lk[yp=CX83CsgSOJ",
+          "longDescription": [
+            "The ddpid configuration is environment-specific, contact Ericsson Support for details of this value.",
+            "The account and password are customer-provided credentials of an accessible SFTP server where the",
+            "DDC files are staged and from there (optionally) sent to Ericsson DDP for processing."
+          ],
+          "keys": [
+            "eric-enm-ddc.eric-oss-ddc.autoUpload.password"
+          ]
+        },
+        "pm_server_external_remote_write_enabled": {
+          "$ref": "#/definitions/true_false",
+          "category": "monitoring",
+          "displayName": "Enable PM server external write",
+          "description": "If enabled is true, data is exposed to remote endpoint. If enabled is false, the following values are not required.",
+          "keys": [
+            "eric-enm-int-pm-server.eric-pm-server.config.external_remote_write.enabled"
+          ]
+        },
+        "pm_server_external_remote_write_relabel_configs": {
+          "$ref": "#/definitions/write_relabel_configs",
+          "category": "monitoring",
+          "displayName": "PM server external remote write relabel configs",
+          "example": "[' - source_labels : [job]',' regex: 'kubelet-cadvisor'',' action : drop','- source_labels: [job]' ,' regex: 'prometheus'',' action: drop']",
+          "description": "List of remote write relabel configurations (optional parameter). Remote writer configured with required relabel configurations for data filtering requirements.",
+          "optional": true,
+          "keepOptional": true,
+           "keys": [
+            "eric-enm-int-pm-server.eric-pm-server.config.external_remote_write.write_relabel_configs"
+          ],
+          "displayIf": ["pm_server_external_remote_write_enabled"]
+        },
+        "pm_server_external_write_url":{
+          "$ref": "#/definitions/url",
+          "category": "monitoring",
+          "displayName": "PM server external write URL",
+          "example": "http://141.137.213.7:1234/receive",
+          "description": "A new remote write interface configuration added to PM server to expose the data to a remote endpoint by enabling the parameters url, remote_timeout, name, and write_relabel_configs.",
+          "optional": true,
+          "keys": [
+            "eric-enm-int-pm-server.eric-pm-server.config.external_remote_write.url"
+          ]
+        },
+        "pm_server_external_write_remote_timeout":{
+          "$ref": "#/definitions/any_string",
+          "category": "monitoring",
+          "displayName": "PM server external write remote timeout",
+          "example": "30 s",
+          "description": "Timeout for requests to the remote write endpoint. Recommended value is 30 s (optional parameter).",
+          "optional": true,
+          "keys": [
+            "eric-enm-int-pm-server.eric-pm-server.config.external_remote_write.remote_timeout"
+          ]
+        },
+        "pm_server_external_write_name":{
+          "$ref": "#/definitions/any_string",
+          "category": "monitoring",
+          "displayName": "PM server external write name",
+          "example": "enm109",
+          "description": "Name of the remote write configuration, which must be unique among remote write configurations if specified. The name is used in metrics and logging to help users distinguish between remote write configurations (optional parameter).",
+          "optional": true,
+          "keys": [
+            "eric-enm-int-pm-server.eric-pm-server.config.external_remote_write.name"
+          ]
+        },
+        "pm_server_external_write_ca_file_name":{
+          "$ref": "#/definitions/any_string",
+          "category": "monitoring",
+          "displayName": "PM server external write ca file name",
+          "example": "pm-server-external-write-ca-file-name",
+          "description": "Name of the remote write configuration, which must be unique among remote write configurations if specified. The name is used in metrics and logging to help users distinguish between remote write configurations (optional parameter).",
+          "optional": true,
+          "keys": [
+            "eric-enm-int-pm-server.eric-pm-server.config.external_remote_write.ca_file_name"
+          ]
+        },
+        "eric_log_transformer_inclusions":{
+          "$ref": "#/definitions/any_string",
+          "category": "monitoring",
+          "displayName": "Eric log transformer egress syslog inclusions",
+          "example": "enm109",
+          "description": "This is an optional configuration and must be left as the default value when not using inclusion rules for log events.",
+          "optional": true,
+          "keys": [
+            "eric-enm-int-log-transformer.eric-log-transformer.egress.syslog.inclusions"
+          ]
+        },
+        "eric_log_transformer_exclusions":{
+          "$ref": "#/definitions/any_string",
+          "category": "monitoring",
+          "displayName": "Eric log transformer egress syslog exclusions",
+          "example": "",
+          "description": "This is an optional configuration and must be left as the default value when not using exclusion rules for log events.",
+          "optional": true,
+          "keys": [
+            "eric-enm-int-log-transformer.eric-log-transformer.egress.syslog.exclusions"
+          ]
+        },
+        "ingress_class":{
+          "$ref": "#/definitions/any_string",
+          "category": "ingressl4",
+          "displayName": "Ingress l4 class name",
+          "example": "ingress-nginx",
+          "description": "Ingress l4 controller class name.",
+          "longDescription": [
+            "The default value of ingress-nginx is used on this field.",
+            "Ensure that the value used on this field is the same as used on eric-oss-ingresscontroller-nx.ingressClass : <value>.",
+            "Change the default value only if it is changed on eric-oss-ingresscontroller-nx.ingressClass field."
+          ],
+          "keys": [
+            "eric-enm-int-esm-server.eric-esm-server.ingress.ingressClass"
+          ]
+        },
+        "ingress_hostname":{
+          "$ref": "#/definitions/hostname",
+          "category": "ingressl4",
+          "displayName": "Ingress hostname",
+          "example": "ieatenmc12a009.athtem.eei.ericsson.se",
+          "immutable": true,
+          "keys": [
+            "eric-enm-int-esm-server.eric-esm-server.ingress.hostname"
+          ]
+        },
+        "scripting_sshd_max_startups":{
+          "$ref": "#/definitions/max_start_ups",
+          "category": "scripting",
+          "displayName": "Scripting sshd max startups",
+          "example": "10:30:100",
+          "longDescription": [
+            "Specifies the maximum number of concurrent unauthenticated connections to the SSH daemon. Additional connections are dropped until",
+            "authentication succeeds or the LoginGraceTime expires for a connection. The default is 10:30:100(start:rate:full).",
+            "— start - Number of unauthenticated connections before they start dropping.",
+            "— rate - Percentage chance of dropping once 10 is reached (increases linearly for more than 10)",
+            "— full - Maximum number of connections at which all connection attempts are refused."
+          ],
+          "keys": [
+            "eric-enmsg-general-scripting.sshdConfig.MaxStartups"
+          ]
+        },
+        "value_pack_ebs_ln":{
+          "$ref": "#/definitions/true_false",
+          "category": "non_mandatory_services",
+          "displayName": "Enable EBS LN",
+          "description": "Resources for Value Packs, EBS for LTE (EBS-L) and EBS for NR(EBS-N) is controlled by this tag. If it is set to true then the subcharts eric-enmsg-ebs-flow, eric-enmsg-ebs-topology, eric-enmsg-ebs-controller of eric-enm-stateless-integration chart and required models will be deployed in the system.",
+          "optional": true,
+          "deploymentType":  [
+            "eric-enm-integration-extra-large-production-values"
+          ],
+          "keys": [
+            "tags.value_pack_ebs_ln", "global.tags.value_pack_ebs_ln"
+          ]
+        },
+        "value_pack_ebs_m":{
+          "$ref": "#/definitions/true_false",
+          "category": "non_mandatory_services",
+          "displayName": "Enable EBS M",
+          "description": "Resources for Value Pack, EBS for MME(EBS-M) is controlled by this tag. If it is set to true then the subcharts eric-enmsg-ebs-flow and eric-enmsg-ebs-controller of eric-enm-stateless-integration chart and required models will be deployed in the system.",
+          "optional": true,
+          "deploymentType":  [
+            "eric-enm-integration-extra-large-production-values"
+          ],
+          "keys": [
+            "tags.value_pack_ebs_m", "global.tags.value_pack_ebs_m"
+          ]
+        },
+        "deploy_fileaccess_nbi":{
+          "$ref": "#/definitions/true_false",
+          "category": "non_mandatory_services",
+          "displayName": "Enable PM File Access NBI",
+          "description": "Value pack PM fileaccess NBI Is not yet supported in ENM and must remain set to false.",
+          "optional": true,
+          "keys": [
+            "tags.deploy_fileaccess_nbi", "global.tags.deploy_fileaccess_nbi"
+          ]
+        },
+        "backup_scheduling_schedules": {
+          "$ref": "#/definitions/schedules",
+          "category": "configuration",
+          "displayName": "Backup Scheduling Schedules",
+          "example": "{[{every: 2d10m, start: 2022-12-22T04:00:00, stop:2022-12-22T04:00:00}]}",
+          "keys": [
+            "global.bro.backup.scheduling.schedules"
+          ],
+          "optional": true
+        }
+      },
+      "required": [],
+      "title": "Site Engineering Data for cENM",
+      "type": "object"
+    }
+  },
+  "required": [
+    "parameters"
+  ],
+  "type": "object",
+  "categories": [
+    {"name": "IPv4 Address", "shortName": "ipv4"},
+    {"name": "IPv6 Address", "shortName": "ipv6"},
+    {"name": "Storage", "shortName": "storage"},
+    {"name": "Configuration", "shortName": "configuration"},
+    {"name": "Security", "shortName": "security"},
+    {"name": "Monitoring", "shortName": "monitoring"},
+    {"name": "Ingress l4", "shortName": "ingressl4"},
+    {"name": "Ingress NX", "shortName": "ingressnx"},
+    {"name": "Scripting", "shortName": "scripting"},
+    {"name": "Non-Mandatory Services", "shortName": "non_mandatory_services"}
+  ],
+  "autoPopulationTypes": [
+    {
+      "name": "IPv4 VIPs",
+      "shortName": "ipv4_vips",
+      "type": "ipv4"
+    },
+    {
+      "name": "IPv6 VIPs",
+      "shortName": "ipv6_vips",
+      "type": "ipv6"
+    }
+  ]
+}

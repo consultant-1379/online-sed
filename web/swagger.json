@@ -1,0 +1,492 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "SED file validation API",
+    "description": "This API endpoint(s) allows users to validate a SED file(s) of pENM and cENM for the Upgrade of a deployment.",
+    "contact": {
+      "name": "Support",
+      "email": "pdltordepl@pdl.internal.ericsson.com"
+    }
+  },
+  "host": "siteengineeringdata.internal.ericsson.com",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "Validate",
+      "description": "API endpoint to validate a SED file (text) of pENM for the Install and Upgrade of a deployment."
+    },
+    {
+      "name": "validatecenm",
+      "description": "API endpoint to validate a SED file (yaml) of cENM for the Install and Upgrade of a deployment."
+    }
+  ],
+  "consumes": ["multipart/form-data"],
+  "produces": ["application/json"],
+  "paths": {
+    "/validate": {
+      "post": {
+        "tags": ["SEDFilesValidation"],
+        "description": "The user of this tool must select the correct setup specific to their deployment. To start a new SED file validation, select \"Try it out\" and fill the correct details. After executing the API call, a response will be displayed containing different validation errors categories. More details can be found in the Responses section and the Models section.",
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "product",
+            "type": "string",
+            "description": "The ENM product (currently only supports Physical ENM)",
+            "enum": ["pENM"],
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "useCase",
+            "type": "string",
+            "description": "The useCase",
+            "enum": ["install", "upgrade"],
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "enmVersion",
+            "type": "string",
+            "description": "Add ENM Product Set Version",
+            "example": "23.11.100",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "enmDeploymentType",
+            "type": "string",
+            "description": "Add ENM Deployment Type",
+            "example": "large_production_IPv4_1aut.xml",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "ipVersion",
+            "type": "string",
+            "description": "Select IP Version",
+            "enum": ["ipv4", "ipv6_ext", "dual"],
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "SEDFile",
+            "type": "file",
+            "description": "A SED file must be provided for validation",
+            "x-mimetype": "text/plain",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "snapshotSchema",
+            "type": "file",
+            "description": "Snapshot schema to be used when validating the SED file",
+            "x-mimetype": "application/json"
+          },
+          {
+            "in": "formData",
+            "name": "exclusionIps",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of IP's that should not be allocated in the SED file"
+          },
+          {
+            "in": "formData",
+            "name": "includePasswords",
+            "type": "boolean",
+            "default": true,
+            "description": "Include passwords in the generated SED file."
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Validate_PassResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Validate_FailResult"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "schema": {
+              "$ref": "#/definitions/Validate_PassResult"
+            }
+          }
+        }
+      }
+    },
+    "/validatecenm": {
+      "post": {
+        "tags": ["SEDFilesValidation"],
+        "description": "The user of this tool must select the correct setup specific to their deployment. To start a new SED file validation, select \"Try it out\" and fill the correct details. After executing the API call, a response will be displayed containing different validation errors categories. More details can be found in the Responses section and the Models section.",
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "useCase",
+            "type": "string",
+            "description": "The useCase",
+            "enum": ["install", "upgrade"],
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "enmVersion",
+            "type": "string",
+            "description": "Add ENM Product Set Version",
+            "example": "23.11.100",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "enmDeploymentType",
+            "type": "string",
+            "description": "Add ENM Deployment Type",
+            "enum": ["small", "extraLarge", "singleInstance", "multiInstance"],
+            "example": "extraLarge",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "ipVersion",
+            "type": "string",
+            "description": "Select IP Version",
+            "enum": ["IPv4", "IPv6_EXT", "Dual"],
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "SEDFile",
+            "type": "file",
+            "description": "A SED file must be provided for validation",
+            "x-mimetype": "text/plain",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "snapshotSchema",
+            "type": "file",
+            "description": "Snapshot schema to be used when validating the SED file",
+            "x-mimetype": "application/json"
+          },
+          {
+            "in": "formData",
+            "name": "snapshotBaseValuesYaml",
+            "type": "file",
+            "description": "Snapshot base yaml file for testing with schema changes",
+            "x-mimetype": "text/plain"
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Validatecenm_PassResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Validatecenm_FailResult"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "schema": {
+              "$ref": "#/definitions/Validatecenm_PassResult"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "SEDInformation": {
+      "required": ["product", "useCase" ,"enmVersion", "enmDeploymentType", "ipVersion", "SEDFile"],
+      "properties": {
+        "product": {
+          "type": "string",
+          "description": "The ENM product (currently only supports Physical ENM)",
+          "enum": ["pENM"]
+        },
+        "useCase": {
+          "type": "string",
+          "description": "The useCase",
+          "enum": ["install", "upgrade"]
+        },
+        "enmVersion": {
+          "type": "string",
+          "description": "The ENM Product Set Version. The ENM Product Set is populated and given a version by MTE, check https://ci-portal.seli.wh.rnd.internal.ericsson.com/#"
+        },
+        "enmDeploymentType": {
+          "type": "string",
+          "description": "The ENM Deployment Type. This must match the environment_model paramenter in SED file provided for validation."
+        },
+        "ipVersion": {
+          "type": "string",
+          "description": "The IP Version. The version must match IP Version in SED file provided for validation.",
+          "enum": ["ipv4", "ipv6_ext", "dual"]
+        },
+        "includePasswords": {
+          "type": "boolean",
+          "description": "Include passwords in the generated SED file."
+        },
+        "exclusionIps": {
+          "type": "array",
+          "description": "Array of IP's that should not be allocated in the SED file"
+        }
+      },
+      "example": {
+        "product": "pENM",
+        "useCase": "upgrade",
+        "enmVersion": "23.07",
+        "enmDeploymentType": "large_production_dualStack_3evt_racks_2eba.xml",
+        "ipVersion": "dual"
+      }
+    },
+    "Validate_FailResult": {
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "The success flag"
+        },
+        "message": {
+          "type": "string",
+          "description": "The message contains the error"
+        }
+      },
+      "example": {
+        "success": false,
+        "message": "Missing or invalid ipVersion. Must be one of: ipv4, ipv6_ext, dual"
+      }
+    },
+    "Validate_PassResult": {
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "The success flag"
+        },
+        "message": {
+          "type": "object",
+          "description": "The message contains the output",
+          "properties": {
+            "isInputSEDValid": {
+              "type": "boolean",
+              "description": "The isInputSEDValid flag"
+            },
+            "newSED": {
+              "type": "object",
+              "description": "The SED file values"
+            },
+            "validationErrors": {
+              "type": "object",
+              "description": "The SED file values",
+              "properties": {
+                "missingKeyNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The MissingKeyNames array contains the missing keys in the SED file from the schema"
+                },
+                "requiredKeyValuesNotProvided": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The RequiredKeyValuesNotProvided array contains the missing required values"
+                },
+                "invalidKeyValues": {
+                  "type": "object",
+                  "description": "The InvalidKeyValues object contains invalid values"
+                },
+                "duplicatedKeyValues": {
+                  "type": "object",
+                  "description": "The DuplicatedKeyValues object contains the duplicated values"
+                },
+                "duplicatedKeyValuesInExclusionIps": {
+                  "type": "object",
+                  "description": "The DuplicatedKeyValuesInExclusionIps object contains the duplicated values that were set in the exclusionIps array passed"
+                },
+                "mismatchedKeyValues": {
+                  "type": "object",
+                  "description": "The value of this key should match with another specific key"
+                }
+              }
+            }
+          }
+        }
+      },
+      "example": {
+        "success": true,
+        "message": {
+          "isInputSEDValid": false,
+          "newSED": {
+            "enable_northstar": "",
+            "internal_ipaddress_start": "",
+            "internal_ipaddress_end": "",
+            "jgroups_ipaddress_start": "",
+            "jgroups_ipaddress_end": ""
+          },
+          "validationErrors": {
+            "missingKeyNames": [
+              "enable_northstar",
+              "internal_ipaddress_start",
+              "internal_ipaddress_end",
+              "jgroups_ipaddress_start"
+            ],
+            "invalidKeyValues": [
+              {
+                "keyName": "LMS_ilo_ipv6address",
+                "keyValue": "2001:1b70:82b9:0000:0000:0000:0000:0090/64",
+                "validationPattern": "^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4})*)?)::(([0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4})*)?))$"
+              }
+            ],
+            "duplicatedKeyValues": [
+              {
+                "keyName": "evt_node1_IPv6",
+                "keyValue": "2001:1b70:82b9:0000:0000:0000:0000:0090/64"
+              },
+              {
+                "keyName": "LMS_ilo_ipv6address",
+                "keyValue": "2001:1b70:82b9:0000:0000:0000:0000:0090/64"
+              }
+            ],
+            "requiredKeyValuesNotProvided": [
+              "scp_node1_hostname",
+              "evt_node1_hostname"
+            ],
+            "duplicatedKeyValuesInExclusionIps": [
+              {
+                "keyName": "evt_node1_IPv6",
+                "keyValue": "2001:1b70:82b9:0000:0000:0000:0000:0090/64"
+              }
+            ],
+            "mismatchedKeyValues": [
+              {
+                "keyName": "SSO_COOKIE_DOMAIN",
+                "keyValue": "enmhost-2.athtem.eei.ericsson.se",
+                "keyToMatch": "httpd_fqdn"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "Validatecenm_PassResult": {
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "The success flag"
+        },
+        "message": {
+          "type": "object",
+          "description": "The message contains the output",
+          "properties": {
+            "isInputSEDValid": {
+              "type": "boolean",
+              "description": "The isInputSEDValid flag"
+            },
+            "newSED": {
+              "type": "object",
+              "description": "The SED file values"
+            },
+            "newSedString": {
+              "type": "string",
+              "description": "The SED file values as text"
+            },
+            "validationErrors": {
+              "type": "object",
+              "description": "The SED file values",
+              "properties": {
+                "missingKeyNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The MissingKeyNames array contains the missing keys in the SED file from the schema"
+                },
+                "requiredKeyValuesNotProvided": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The RequiredKeyValuesNotProvided array contains the missing required values"
+                },
+                "invalidKeyValues": {
+                  "type": "object",
+                  "description": "The InvalidKeyValues object contains invalid values"
+                },
+                "duplicatedKeyValues": {
+                  "type": "object",
+                  "description": "The DuplicatedKeyValues object contains the duplicated values"
+                }
+              }
+            }
+          }
+        }
+      },
+      "example": {
+        "success": true,
+        "message": {
+          "isInputSEDValid": false,
+          "newSED": {},
+          "newSedString": {},
+          "validationErrors": {
+            "missingKeyNames": [
+              "storageClassCephCapped",
+              "hostPort",
+              "pm_server_external_write_enabled",
+              "ingress_class",
+              "ingress_hostname"
+            ],
+            "invalidKeyValues": [
+              {
+                "keyName": "eric_log_transformer_inclusions",
+                "keyValue": [],
+                "validationPattern": "^.+$"
+              },
+              {
+                "keyName": "eric_log_transformer_exclusions",
+                "keyValue": [],
+                "validationPattern": "^.+$"
+              }
+            ],
+            "duplicatedKeyValues": [],
+            "requiredKeyValuesNotProvided": [
+              "externalStorageCredentials",
+              "rwx_storageClass",
+              "rwo_storageClass",
+              "host_system_identifier",
+              "COM_INF_LDAP_ROOT_SUFFIX",
+              "COM_INF_LDAP_ADMIN_CN"]
+          }
+        }
+      }
+    },
+    "Validatecenm_FailResult": {
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "The success flag"
+        },
+        "message": {
+          "type": "string",
+          "description": "The message contains the error"
+        }
+      },
+      "example": {
+        "success": false,
+        "message": "Invalid ipVersion. Must be one of: IPv4, Dual, IPv6_EXT"
+      }
+    }
+  }
+}

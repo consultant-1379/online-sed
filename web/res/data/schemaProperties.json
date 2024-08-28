@@ -1,0 +1,21 @@
+{
+  "category": "The category in which the parameter will be displayed.",
+  "displayName": "User friendly name that can be displayed instead of the parameter key when using the tool.",
+  "description": "Additional information about the parameter.",
+  "required": "Identifies mandatory input (this refers to 'optional' attribute in the schema).",
+  "keepOptional": "Ensures that a parameter is always optional.",
+  "ipVersion": "Ensures that a parameter is only displayed for specified IP version.",
+  "autoPopulate": "Used to populate IP addresses in the 'Auto Populate' feature (this refers to the shortName property of the autoPopulationTypes in the schema).",
+  "displayIf": "Restricts the parameter so it can only be displayed when the corresponding parameter is enabled.",
+  "validationPattern": "Specified validation pattern (this refers to 'pattern' in the schema).",
+  "type": "Specified parameter type.",
+  "format": "Specified parameter format.",
+  "validationMessage": "Message displayed on invalid input.",
+  "preventDuplicates": "Identifies not allowed duplication of parameter values.",
+  "options": "Predefined list of allowed parameter values (this refers to 'enum' in the schema).",
+  "example": "Input example to the user.",
+  "longDescription": "Additional information about the parameter.",
+  "htmlDescription": "Additional information about the parameter.",
+  "keys": "Keys where the value should be populated to the values Yaml file.",
+  "defaultValue": "Default value for the parameter."
+}

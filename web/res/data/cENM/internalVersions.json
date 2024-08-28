@@ -1,0 +1,72 @@
+[
+  {
+    "name": "24.07.57",
+    "schemaVersion": "1.57.0-37",
+    "targetAudience": "pdu",
+    "version": "24.07.57",
+    "sprintVersion": "24.07",
+    "releaseNumber": "24.2",
+    "release": false,
+    "normalisedVersion": "24.7.57"
+  },
+  {
+    "name": "24.05.104",
+    "schemaVersion": "1.55.0-69",
+    "targetAudience": "pdu",
+    "version": "24.05.104",
+    "sprintVersion": "24.05",
+    "releaseNumber": "24.2",
+    "release": false,
+    "normalisedVersion": "24.5.104"
+  },
+  {
+    "name": "24.05.90",
+    "schemaVersion": "1.55.0-61",
+    "targetAudience": "pdu",
+    "version": "24.05.90",
+    "sprintVersion": "24.05",
+    "releaseNumber": "24.2",
+    "release": false,
+    "normalisedVersion": "24.5.90"
+  },
+  {
+    "name": "24.04.96",
+    "schemaVersion": "1.54.0-69",
+    "targetAudience": "pdu",
+    "version": "24.04.96",
+    "sprintVersion": "24.04",
+    "releaseNumber": "24.2",
+    "release": false,
+    "normalisedVersion": "24.4.96"
+  },
+  {
+    "name": "24.04.81-5",
+    "schemaVersion": "1.54.0-62",
+    "targetAudience": "pdu",
+    "version": "24.04.81-5",
+    "sprintVersion": "24.04",
+    "releaseNumber": "24.2",
+    "release": false,
+    "normalisedVersion": "24.4.81-5"
+  },
+  {
+    "name": "24.03.102 (R1GL)",
+    "schemaVersion": "1.53.0-76",
+    "targetAudience": "pdu",
+    "version": "24.03.102",
+    "sprintVersion": "24.03",
+    "releaseNumber": "24.1",
+    "release": true,
+    "normalisedVersion": "24.3.102"
+  },
+  {
+    "name": "24.03.102 (R1GT IP1)",
+    "schemaVersion": "1.53.0-76",
+    "targetAudience": "pdu",
+    "version": "24.03.102",
+    "sprintVersion": "24.03",
+    "releaseNumber": "24.1",
+    "release": true,
+    "normalisedVersion": "24.3.102"
+  }
+]

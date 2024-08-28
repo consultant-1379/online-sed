@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Cloud Native ENM",
+    "shortName": "cENM",
+    "datapath": "cENM",
+    "datatype": "yaml"
+  }
+]
